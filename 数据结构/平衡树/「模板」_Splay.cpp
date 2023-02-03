@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-#define int long long
+// #define int long long
 // #define ll long long
 // #define double long double
 //#define pii pair <int,int>
@@ -48,84 +48,137 @@ inline int qmi(int x,int y,int mod){
 }
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
-int fa[N],cnt[N],val[N],son[N][2],si[N],root,tot;
-inline bool getson(int x){
-    return son[fa[x]][1]==x;
+int n;
+int root,tot;
+struct balance_tree{
+    int dist,size,cnt;
+    int son[2],fa;
+    void init(int _fa,int _dist){
+        dist=_dist,fa=_fa;
+        size=1,cnt=1;
+    }
+}tr[N];
+void pushup(int p){
+    tr[p].size=tr[tr[p].son[0]].size+tr[tr[p].son[1]].size+tr[p].cnt;
+    return;
 }
-inline void pu(int x){
-    si[x]=cnt[x]+si[son[x][0]]+si[son[x][1]];
-    return ;
+int max(int x,int y){
+    return x>y?x:y;
 }
-inline int bt(){
-	tot++;
-	son[tot][0]=son[tot][1]=fa[tot]=0;
-	si[tot]=cnt[tot]=1;
-	return tot;
+int min(int x,int y){
+    return x<y?x:y;
 }
 void rotate(int x){
-    int fath=fa[x],gfath=fa[fath],gs=getson(x);
-    son[fath][gs]=son[x][gs^1]; //now.~gsson -> fa.gxson 
-    fa[son[fath][gs]]=fath;
-    son[x][gs^1]=fath;          //fa -> now.~gsson
-    fa[fath]=x;
-    fa[x]=gfath;				//granfa -> now.fa
-    if(gfath)son[gfath][son[gfath][1]==fath]=x;
-    pu(fath);
-    pu(x);
-    return ;
+    int y=tr[x].fa,z=tr[y].fa;
+    int k=tr[y].son[1]==x;
+    tr[z].son[tr[z].son[1]==y]=x,tr[x].fa=z;
+    tr[y].son[k]=tr[x].son[k^1],tr[tr[x].son[k^1]].fa=y;
+    tr[x].son[k^1]=y,tr[y].fa=x;
+    pushup(y),pushup(x);
+    return;
 }
-inline void splay(int x){
-	for(int fath;fath=fa[x];rotate(x)){
-		if(fa[fath]){
-			rotate((getson(x)==getson(fath)?fath:x));
+void splay(int x,int p){
+    while(tr[x].fa!=p){
+        int y=tr[x].fa;
+		int z=tr[y].fa;
+        if(z!=p){
+        	if((tr[z].son[1]==y)^(tr[y].son[1]==x)) rotate(x);
+       		else rotate(y);
+		}
+        rotate(x);
+    }
+    if(!p) root=x;
+    return;
+}
+void insert(int x){
+    int p=root,fa=0;
+    while(p){
+        if(tr[p].dist==x){
+            tr[p].cnt++;
+			tr[p].size++;
+            splay(p,0);
+            return;
+        }
+        fa=p,p=tr[p].son[tr[p].dist<x];
+    }
+    p=++tot;
+    if(fa) tr[fa].son[tr[fa].dist<x]=p;
+    tr[p].init(fa,x);
+    splay(p,0);
+    return;
+}
+int get_pre(int x){
+	int p=root,fa=tr[p].fa;
+	while(p){
+	    if(tr[p].dist<x)fa=p,p=tr[p].son[1];
+	    else p=tr[p].son[0];
+	}
+	splay(fa,0);
+	return fa;
+}
+int get_suc(int x){
+    int p=root,fa=tr[p].fa;
+    while(p){
+        if(tr[p].dist>x)fa=p,p=tr[p].son[0];
+        else p=tr[p].son[1];
+    }
+    splay(fa,0);
+    return fa;
+}
+void erase(int x){
+    int pre=get_pre(x),suc=get_suc(x);
+    splay(pre,0);
+    splay(suc,pre);
+    if(tr[tr[suc].son[0]].cnt>1) tr[tr[suc].son[0]].cnt--,tr[tr[suc].son[0]].size--;
+    else tr[tr[suc].son[0]].fa=0,tr[suc].son[0]=0;
+	pushup(suc);
+	pushup(pre);
+    return;
+}
+int query(int x){
+	int p=root;
+	int res=0;
+	while(p){
+		if(tr[p].dist==x){
+			res+=tr[tr[p].son[0]].size;
+			splay(p,0);
+			return res;
+		}
+		if(tr[p].dist<x){
+			res+=tr[tr[p].son[0]].size;
+			res+=tr[p].cnt;
+			p=tr[p].son[1];
+		}else p=tr[p].son[0];
+	}
+	return res;
+}
+int rk(int x){
+	int k=x+1;
+	int p=root;
+	while(p){
+	    if(tr[tr[p].son[0]].size+tr[p].cnt<k){
+	        k-=tr[tr[p].son[0]].size+tr[p].cnt;
+	        p=tr[p].son[1];
+	    }else if(tr[tr[p].son[0]].size>=k) p=tr[p].son[0];
+	    else{
+			splay(p,0);
+			return tr[p].dist;
 		}
 	}
-	root=x;
-}
-inline void insert(int x){
-	if(!root){
-		int now=bt();
-		root=now;
-		val[now]=x;
-		return ;
-	}
-	int now=root,fath=0;
-	while(1){
-		if(x==val[now]){
-			cnt[now]++;
-			pu(now);
-			pu(fath);
-			splay(now);
-			break;
-		}
-		fath=now;
-		now=son[now][val[now]<x];
-		if(!now){
-			now=bt();
-			fa[now]=fath;
-			son[fath][val[fath]<x]=now;
-			val[now]=x;
-			pu(fath);
-			splay(now);
-			break;
-		}
-	}
-	return ;
-}
-inline int kth(int x){
-	int now=root;
-	while(1){
-		if(son[now][0]&&x<=si[son[now][0]])now=son[now][0];
-		else{
-			int tmp=(son[now][0]?si[son[now][0]]:0)+cnt[now];
-			if(x<=tmp)
-		}
-
-	}
-}
-signed main(){
-    
 	return 0;
 }
-/*
-*/
+signed main(){
+    n=read();
+    insert(inf),insert(-inf);
+    for(int i=1;i<=n;++i){
+        int pos,x;
+        pos=read(),x=read();
+        if(pos==1) insert(x);
+        if(pos==2) erase(x);
+        if(pos==3) printf("%d\n",query(x));
+        if(pos==4) printf("%d\n",rk(x));
+        if(pos==5) printf("%d\n",tr[get_pre(x)].dist);
+        if(pos==6) printf("%d\n",tr[get_suc(x)].dist);
+    }
+    return 0;
+}
