@@ -59,8 +59,8 @@ inline void pu(int x){
 void rotate(int x){
     int fath=fa[x],gfath=fa[fath],gs=getson(x);
     son[fath][gs]=son[x][gs^1]; //now.~gsson -> fa.gxson 
-    fa[son[fath][gs]]=fath;     //
-    son[x][gs^1]=fath;
+    fa[son[fath][gs]]=fath;
+    son[x][gs^1]=fath;          //
     fa[fath]=x;
     fa[x]=gfath;
     if(gfath){
