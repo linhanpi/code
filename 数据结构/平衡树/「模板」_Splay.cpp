@@ -48,137 +48,138 @@ inline int qmi(int x,int y,int mod){
 }
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
-int n;
-int root,tot;
-struct balance_tree{
-    int dist,size,cnt;
+struct splay_tree{
+    int val,si,cnt;
     int son[2],fa;
-    void init(int _fa,int _dist){
-        dist=_dist,fa=_fa;
-        size=1,cnt=1;
+    void init(int _fa,int _val){
+        fa=_fa,val=_val;
+        si=cnt=1;
     }
-}tr[N];
-void pushup(int p){
-    tr[p].size=tr[tr[p].son[0]].size+tr[tr[p].son[1]].size+tr[p].cnt;
-    return;
-}
-int max(int x,int y){
-    return x>y?x:y;
-}
-int min(int x,int y){
-    return x<y?x:y;
+    #define val(p) tree[p].val
+    #define si(p) tree[p].si
+    #define cnt(p) tree[p].cnt
+    #define son(p,i) tree[p].son[i]
+    #define fa(p) tree[p].fa
+}tree[N];
+int root,tot;
+void pu(int p){
+    si(p)=si(son(p,0))+si(son(p,1))+cnt(p);
+    return ;
 }
 void rotate(int x){
-    int y=tr[x].fa,z=tr[y].fa;
-    int k=tr[y].son[1]==x;
-    tr[z].son[tr[z].son[1]==y]=x,tr[x].fa=z;
-    tr[y].son[k]=tr[x].son[k^1],tr[tr[x].son[k^1]].fa=y;
-    tr[x].son[k^1]=y,tr[y].fa=x;
-    pushup(y),pushup(x);
-    return;
+    int fa=fa(x),gfa=fa(fa);
+    int k=son(fa,1)==x,kfa=son(gfa,1)==fa;
+    son(gfa,kfa)=x,fa(x)=gfa;               // x 替代 fa
+    son(fa,k)=son(x,k^1),fa(son(x,k^1))=fa; // x 的 k^1 son 替代 fa 的 k son
+    son(x,k^1)=fa,fa(fa)=x;                 //fa 替代 x 的 k^1 son
+    pu(fa),pu(x);
+    return ;
 }
 void splay(int x,int p){
-    while(tr[x].fa!=p){
-        int y=tr[x].fa;
-		int z=tr[y].fa;
-        if(z!=p){
-        	if((tr[z].son[1]==y)^(tr[y].son[1]==x)) rotate(x);
-       		else rotate(y);
-		}
+    while(fa(x)!=p){
+        int fa=fa(x),gfa=fa(fa);
+        if(gfa!=p){
+            if((son(fa,1)==x)^(son(gfa,1)==fa))rotate(x);
+            else rotate(fa);
+        }
         rotate(x);
     }
     if(!p) root=x;
-    return;
+    return ;
 }
 void insert(int x){
     int p=root,fa=0;
     while(p){
-        if(tr[p].dist==x){
-            tr[p].cnt++;
-			tr[p].size++;
+        // cout<<"p "<<p<<endl;
+        if(val(p)==x){
+            cnt(p)++;
+            si(p)++;
             splay(p,0);
-            return;
+            return ;
         }
-        fa=p,p=tr[p].son[tr[p].dist<x];
+        fa=p,p=son(p,val(fa)<x);
     }
     p=++tot;
-    if(fa) tr[fa].son[tr[fa].dist<x]=p;
-    tr[p].init(fa,x);
+    if(fa)son(fa,val(fa)<x)=p;
+    tree[p].init(fa,x);
     splay(p,0);
-    return;
+    return ;
 }
-int get_pre(int x){
-	int p=root,fa=tr[p].fa;
-	while(p){
-	    if(tr[p].dist<x)fa=p,p=tr[p].son[1];
-	    else p=tr[p].son[0];
-	}
-	splay(fa,0);
-	return fa;
-}
-int get_suc(int x){
-    int p=root,fa=tr[p].fa;
+int qq(int x){
+    int p=root,fa=fa(p);
     while(p){
-        if(tr[p].dist>x)fa=p,p=tr[p].son[0];
-        else p=tr[p].son[1];
+        if(val(p)<x)fa=p,p=son(p,1);
+        else p=son(p,0);
+    }
+    splay(fa,0);
+    return fa;
+}
+int hj(int x){
+    int p=root,fa=fa(p);
+    while(p){
+        // cout<<"p "<<p<<" "<<x<<" "<<val(p)<<" "<<son(p,0)<<" "<<son(p,1)<<endl;
+        if(val(p)>x)fa=p,p=son(p,0);
+        else p=son(p,1);
     }
     splay(fa,0);
     return fa;
 }
 void erase(int x){
-    int pre=get_pre(x),suc=get_suc(x);
+    int pre=qq(x),hou=hj(x);
     splay(pre,0);
-    splay(suc,pre);
-    if(tr[tr[suc].son[0]].cnt>1) tr[tr[suc].son[0]].cnt--,tr[tr[suc].son[0]].size--;
-    else tr[tr[suc].son[0]].fa=0,tr[suc].son[0]=0;
-	pushup(suc);
-	pushup(pre);
-    return;
+    splay(hou,pre);
+    if(cnt(son(hou,0))>1)cnt(son(hou,0))--,si(son(hou,0))--;
+    else fa(son(hou,0))=0,son(hou,0)=0;
+    pu(hou);
+    pu(pre);
+    return ;
 }
-int query(int x){
-	int p=root;
-	int res=0;
-	while(p){
-		if(tr[p].dist==x){
-			res+=tr[tr[p].son[0]].size;
-			splay(p,0);
-			return res;
-		}
-		if(tr[p].dist<x){
-			res+=tr[tr[p].son[0]].size;
-			res+=tr[p].cnt;
-			p=tr[p].son[1];
-		}else p=tr[p].son[0];
-	}
-	return res;
+int chak(int x){
+    // int pre=qq(x+1);
+    // x=val(pre);
+    int p=root;
+    int res=0;
+    while(p){
+        if(val(p)==x){
+            res+=si(son(p,0));
+            splay(p,0);
+            return res;
+        }
+        if(val(p)<x){
+            res+=si(son(p,0))+cnt(p);
+            p=son(p,1);
+        }
+        else p=son(p,0);
+    }
+    return res;
 }
-int rk(int x){
-	int k=x+1;
-	int p=root;
-	while(p){
-	    if(tr[tr[p].son[0]].size+tr[p].cnt<k){
-	        k-=tr[tr[p].son[0]].size+tr[p].cnt;
-	        p=tr[p].son[1];
-	    }else if(tr[tr[p].son[0]].size>=k) p=tr[p].son[0];
-	    else{
-			splay(p,0);
-			return tr[p].dist;
-		}
-	}
-	return 0;
+int kth(int x){
+    int k=x+1;
+    int p=root;
+    while(p){
+        if(si(son(p,0))+cnt(p)<k){
+            k-=si(son(p,0))+cnt(p);
+            p=son(p,1);
+        }
+        else if(si(son(p,0))>=k)p=son(p,0);
+        else{
+            splay(p,0);
+            return val(p);
+        }
+    }
+    return 0;
 }
 signed main(){
-    n=read();
+    int n=read();
     insert(inf),insert(-inf);
-    for(int i=1;i<=n;++i){
-        int pos,x;
-        pos=read(),x=read();
-        if(pos==1) insert(x);
-        if(pos==2) erase(x);
-        if(pos==3) printf("%d\n",query(x));
-        if(pos==4) printf("%d\n",rk(x));
-        if(pos==5) printf("%d\n",tr[get_pre(x)].dist);
-        if(pos==6) printf("%d\n",tr[get_suc(x)].dist);
+    for(int i=1;i<=n;i++){
+        int pos=read(),x=read();
+        if(pos==1)insert(x);
+        if(pos==2)erase(x);
+        if(pos==3)write(chak(x)),puts("");
+        if(pos==4)write(kth(x)),puts("");
+        if(pos==5)write(val(qq(x))),puts("");
+        if(pos==6)write(val(hj(x))),puts("");
     }
     return 0;
 }
