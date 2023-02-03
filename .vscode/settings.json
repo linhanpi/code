@@ -1,0 +1,16 @@
+{
+    "commentTranslate.targetLanguage": "zh-CN",
+    "commentTranslate.multiLineMerge": false,
+    "commentTranslate.source": "DarkCWK.youdao-youdao",
+    "novelReader.filePath": "D:/zz/lshtz.txt",
+    "novelReader.startingPosition": 3,
+    "novelReader.step": 3,
+    "files.associations": {
+        "iostream": "cpp",
+        "chrono": "cpp",
+        "cmath": "cpp",
+        "ostream": "cpp",
+        "iomanip": "cpp"
+    },
+    "explorer.compactFolders": false
+}
