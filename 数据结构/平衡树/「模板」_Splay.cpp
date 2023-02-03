@@ -1,5 +1,5 @@
 #include<bits/stdc++.h>
-// #define int long long
+#define int long long
 // #define ll long long
 // #define double long double
 //#define pii pair <int,int>
@@ -31,7 +31,7 @@ template<typename T>inline void write(T x) {
 const int N=1e5+5;
 const int M=1e6+5;
 const int mo=7000007;
-const int inf=1e9+7;
+const int inf=INT_MAX;
 const int base=131;
 const int mod=(1<<30);
 const double eps=1e-6;
@@ -60,7 +60,7 @@ struct splay_tree{
     #define cnt(p) tree[p].cnt
     #define son(p,i) tree[p].son[i]
     #define fa(p) tree[p].fa
-}tree[N];
+}tree[N+M];
 int root,tot;
 void pu(int p){
     si(p)=si(son(p,0))+si(son(p,1))+cnt(p);
@@ -170,16 +170,24 @@ int kth(int x){
     return 0;
 }
 signed main(){
-    int n=read();
+    int n=read(),m=read();
     insert(inf),insert(-inf);
     for(int i=1;i<=n;i++){
+        int x=read();
+        insert(x);
+    }
+    int last=0;
+    int ans=0;
+    for(int i=1;i<=m;i++){
         int pos=read(),x=read();
+        x^=last;
         if(pos==1)insert(x);
         if(pos==2)erase(x);
-        if(pos==3)write(chak(x)),puts("");
-        if(pos==4)write(kth(x)),puts("");
-        if(pos==5)write(val(qq(x))),puts("");
-        if(pos==6)write(val(hj(x))),puts("");
+        if(pos==3)last=chak(x),ans^=last;
+        if(pos==4)last=kth(x),ans^=last;
+        if(pos==5)last=val(qq(x)),ans^=last;
+        if(pos==6)last=val(hj(x)),ans^=last;
     }
+    cout<<ans<<endl;
     return 0;
 }
