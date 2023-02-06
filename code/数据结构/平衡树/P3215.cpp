@@ -2,7 +2,7 @@
  * @Author: watering_penguin 
  * @Date: 2023-02-04 14:03:47 
  * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-02-04 16:45:55
+ * @Last Modified time: 2023-02-06 09:16:22
  */
 #include<bits/stdc++.h>
 //#define int long long
@@ -34,7 +34,7 @@ template<typename T>inline void write(T x) {
 	putchar((x%10)^48);
 	return;
 }
-const int N=1e5+5;
+const int N=2e5+5;
 const int M=1e8+5;
 const int mo=7000007;
 const int inf=1e9+7;
@@ -68,8 +68,8 @@ int bt(){
     ++tot;
     rk[tot]=rand();
     si[tot]=1;
-    qmax[tot]=hmax[tot]=0;
-    qmin[tot]=hmin[tot]=inf;
+    // qmax[tot]=hmax[tot]=0;
+    // qmin[tot]=hmin[tot]=inf;
     return tot;
 }
 void pdsw(int now){
@@ -184,7 +184,9 @@ int bd(int l,int r){
 void Re(int a,int b,int c){
     node t1=fl(root,b+1);
     node t2=fl(t1.a,a);
+    pd(t2.b);
     pdfg(t2.b,c);
+    pd(t2.b);
     // cout<<"c "<<c<<endl;
     root=hb(hb(t2.a,t2.b),t1.b);
     return ;
@@ -192,20 +194,25 @@ void Re(int a,int b,int c){
 void Sw(int a,int b){
     node t1=fl(root,b+1);
     node t2=fl(t1.a,a);
+    pd(t2.b);
     pdsw(t2.b);
+    pd(t2.b);
     root=hb(hb(t2.a,t2.b),t1.b);
     return ;
 }
 void In(int a,int b){
     node t1=fl(root,b+1);
     node t2=fl(t1.a,a);
+    pd(t2.b);
     pdfan(t2.b);
+    pd(t2.b);
     root=hb(hb(t2.a,t2.b),t1.b);
     return ;
 }
 int Qu(int a,int b){
     node t1=fl(root,b+1);
     node t2=fl(t1.a,a);
+    pd(t2.b);
     int res=ceil(1.0*(qmax[t2.b])/2)+ceil(1.0*(abs(hmin[t2.b]))/2);
     root=hb(hb(t2.a,t2.b),t1.b);
     return res;
@@ -215,7 +222,7 @@ void pt(int now){
 	if(son[now][0]){
 		pt(son[now][0]);
 	}
-	cout<<(val[now]==-1)?'(':')';
+	// cout<<(val[now]==-1)?'(':')';
 	if(son[now][1]){
 		pt(son[now][1]);
 	}
