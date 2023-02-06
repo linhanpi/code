@@ -2,6 +2,9 @@
     "C_Cpp.errorSquiggles": "enabled",
     "files.associations": {
         "ostream": "cpp",
-        "iostream": "cpp"
-    }
+        "iostream": "cpp",
+        "chrono": "cpp"
+    },
+    "commentTranslate.hover.enabled": true,
+    "commentTranslate.source": "DarkCWK.youdao-youdao"
 }
