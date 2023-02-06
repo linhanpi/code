@@ -22,7 +22,7 @@ template<typename T>inline T red() {
 	while(c<'0'||c>'9') {
 		if(c=='-')f=true;
 		c=getchar();
-	}
+    }
 	while(c>='0'&&c<='9')x=(x<<3)+(x<<1)+(c^48),c=getchar();
 	return f?-x:x;
 }
