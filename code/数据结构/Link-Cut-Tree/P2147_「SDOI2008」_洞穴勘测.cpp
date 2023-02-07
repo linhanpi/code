@@ -1,8 +1,8 @@
 /*
  * @Author: watering_penguin 
- * @Date: 2023-02-07 10:28:42 
+ * @Date: 2023-02-07 11:23:17 
  * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-02-07 11:17:40
+ * @Last Modified time: 2023-02-07 11:43:10
  */
 #include<bits/stdc++.h>
 #define int long long
@@ -56,17 +56,12 @@ inline int qmi(int x,int y,int mod){
 }
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
-int f[N],son[N][2],si[N],val[N],sum[N],sw[N],six[N];
-void cl(int now){
-    son[now][0]=son[now][1]=f[now]=si[now]=six[now]=val[now]=0;
-    return ;
-}
-int nroot(int now){
+int f[N],son[N][2],si[N],val[N],sum[N],sw[N];
+bool nroot(int now){
     return son[f[now]][0]==now||son[f[now]][1]==now;
 }
 void pu(int now){
-    cl(0);
-    if(now)si[now]=si[son[now][0]]+si[son[now][1]]+six[now]+1;
+    si[now]=si[son[now][0]]+si[son[now][1]]+1;
     return ;
 }
 void pdsw(int now){
@@ -85,7 +80,7 @@ void pd(int now){
 void rotate(int now){
     int fa=f[now],gfa=f[fa],k=son[fa][1]==now,w=son[now][k^1];
     if(nroot(fa))son[gfa][son[gfa][1]==fa]=now;
-    son[fa][k]=w,son[now][k^1]=fa;
+    son[now][k^1]=fa,son[fa][k]=w;
     if(w)f[w]=fa;
     f[now]=gfa,f[fa]=now;
     pu(fa);
@@ -95,23 +90,21 @@ int st[N],top;
 void splay(int now){
     int y=now;
     top=0;
-    st[++top]=y;
+    st[++top]=now;
     while(nroot(y))st[++top]=y=f[y];
     while(top)pd(st[top--]);
     while(nroot(now)){
         int fa=f[now],gfa=f[fa];
         if(nroot(fa)){
-            rotate((son[fa][1]==now)^(son[gfa][1]==fa)?now:fa);
+            rotate((son[fa][1]==now)^(son[gfa][1]==now)?now:fa);
         }
         rotate(now);
     }
     pu(now);
-    return ;
 }
 void acc(int now){
     for(int y=0;now;now=f[y=now]){
         splay(now);
-        six[now]+=si[son[now][1]]-si[y];
         son[now][1]=y;
         pu(now);
     }
@@ -129,7 +122,7 @@ int fr(int now){
     pd(now);
     while(son[now][0]){
         pd(now);
-        if(son[now][0])break;
+        if(!son[now][0])break;
         now=son[now][0];
     }
     splay(now);
@@ -141,30 +134,39 @@ void lian(int x,int y){
     splay(y);
     return ;
 }
-void link(int x,int y){
+void cut(int x,int y){
     lian(x,y);
-    f[x]=y;
-    six[y]+=si[x];
+    f[x]=son[y][0]=0;
     pu(y);
     return ;
 }
+void link(int x,int y){
+    lian(x,y);
+    f[x]=y;
+    pu(y);
+    return ;
+}
+char Q[10];
 signed main(){
     int n=read(),q=read();
-    for(int i=1;i<=n;i++){
-        si[i]=1;
-    }
+    for(int i=1;i<=n;i++)si[i]=1;
     while(q--){
-        char ch;cin>>ch;
-        if(ch=='A'){
+        scanf("%s",Q+1);
+        if(Q[1]=='Q'){
+            int x=read(),y=read();
+            mr(x);
+            if(fr(y)==x){
+                puts("Yes");
+            }
+            else puts("No");
+        }
+        if(Q[1]=='C'){
             int x=read(),y=read();
             link(x,y);
         }
-        else{
+        if(Q[1]=='D'){
             int x=read(),y=read();
-            lian(x,y);
-            write(si[x]*(si[y]-si[x]));
-            // write((six[x]+1)*(six[y]+1));
-            puts("");
+            cut(x,y);
         }
     }
     return 0;
