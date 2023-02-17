@@ -52,6 +52,6 @@ inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 
 signed main(){
-    
+    int n=read();
     return 0;
 }
