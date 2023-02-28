@@ -1,16 +1,16 @@
 /*
  * @Author: watering_penguin 
- * @Date: 2023-02-07 11:23:17 
+ * @Date: 2023-02-24 21:07:20 
  * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-02-25 16:29:34
+ * @Last Modified time: 2023-02-25 16:30:29
  */
 #include<bits/stdc++.h>
-#define int long long
+// #define int long long
 // #define uint unsigned int
 // #define rint register int
 // #define ll long long
 // #define double long double
-//#define pii pair <int,int>
+#define pii pair <int,int>
 #define lowbit(x) (-x&x)
 #define lson (p<<1)
 #define rson (p<<1|1)
@@ -36,17 +36,20 @@ template<typename T>inline void write(T x) {
 	putchar((x%10)^48);
 	return;
 }
-const int N=1e5+5;
-const int M=1e6+5;
+const int N=6e5+5;
+const int M=6e4+5;
 const int mo=7000007;
 const int inf=INT_MAX;
 const int base=131;
-const int mod=51061;
+const int mod=1e9+7;
 const double eps=1e-6;
+const double alpha=0.75;
+const pii lpii={0,0};
 int mgcd(int x,int y){return x==0?y:mgcd(y%x,x);}
 int mlcm(int x,int y){return x/mgcd(x,y)*y;}
 inline int qmi(int x,int y,int mod){
 	int ans=1;
+    x%=mod;
 	while(y){
 		if(y&1)ans=ans*x%mod;
 		x=x*x%mod;
@@ -56,13 +59,12 @@ inline int qmi(int x,int y,int mod){
 }
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
-int f[N],son[N][2],si[N],val[N],sum[N],sw[N];
+int f[N],son[N][2],si[N],sw[N];
 bool nroot(int now){
     return son[f[now]][0]==now||son[f[now]][1]==now;
 }
 void pu(int now){
     si[now]=si[son[now][0]]+si[son[now][1]]+1;
-    return ;
 }
 void pdsw(int now){
     swap(son[now][0],son[now][1]);
@@ -71,14 +73,14 @@ void pdsw(int now){
 }
 void pd(int now){
     if(sw[now]){
-        pdsw(son[now][0]);
-        pdsw(son[now][1]);
-        sw[now]=0;
+        if(son[now][0])pdsw(son[now][0]);
+        if(son[now][1])pdsw(son[now][1]);
+        sw[now]^=1;
     }
     return ;
 }
 void rotate(int now){
-    int fa=f[now],gfa=f[fa],k=son[fa][1]==now,w=son[now][k^1];
+    int fa=f[now],gfa=f[fa],k=(son[fa][1]==now),w=son[now][k^1];
     if(nroot(fa))son[gfa][son[gfa][1]==fa]=now;
     son[now][k^1]=fa,son[fa][k]=w;
     if(w)f[w]=fa;
@@ -95,12 +97,11 @@ void splay(int now){
     while(top)pd(st[top--]);
     while(nroot(now)){
         int fa=f[now],gfa=f[fa];
-        if(nroot(fa)){
-            rotate((son[fa][1]==now)^(son[gfa][1]==now)?now:fa);
-        }
+        if(nroot(fa))rotate((son[fa][1]==now)^(son[gfa][1]==fa)?now:fa);
         rotate(now);
     }
     pu(now);
+    return ;
 }
 void acc(int now){
     for(int y=0;now;now=f[y=now]){
@@ -144,29 +145,35 @@ void link(int x,int y){
     lian(x,y);
     f[x]=y;
     pu(y);
-    return ;
+    return;
 }
-char Q[10];
+int A[N],B[N],tot;
 signed main(){
-    int n=read(),q=read();
-    for(int i=1;i<=n;i++)si[i]=1;
-    while(q--){
-        scanf("%s",Q+1);
-        if(Q[1]=='Q'){
-            int x=read(),y=read();
-            mr(x);
-            if(fr(y)==x){
+    int n=read(),m=read();
+    for(int i=1;i<n;i++){
+        int a=read(),b=read();
+        link(a,b);
+    }
+    for(int i=1;i<=m;i++){
+        char ch;cin>>ch;
+        if(ch=='Q'){
+            int a=read(),b=read();
+            mr(a);
+            if(fr(b)==a){
                 puts("Yes");
             }
             else puts("No");
         }
-        if(Q[1]=='C'){
-            int x=read(),y=read();
-            link(x,y);
+        if(ch=='C'){
+            int a=read(),b=read();
+            A[++tot]=a;
+            B[tot]=b;
+            cut(a,b);
         }
-        if(Q[1]=='D'){
-            int x=read(),y=read();
-            cut(x,y);
+        if(ch=='U'){
+            int x=read();
+            // cout<<A[x]<<" "<<B[x]<<endl;
+            link(A[x],B[x]);
         }
     }
     return 0;
