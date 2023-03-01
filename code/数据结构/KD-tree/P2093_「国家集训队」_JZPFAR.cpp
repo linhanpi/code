@@ -1,11 +1,11 @@
 /*
  * @Author: watering_penguin 
- * @Date: 2023-02-24 21:07:20 
+ * @Date: 2023-02-28 17:09:20 
  * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-03-01 15:40:17
+ * @Last Modified time: 2023-03-01 15:51:52
  */
 #include<bits/stdc++.h>
-// #define int long long
+#define int long long
 // #define uint unsigned int
 // #define rint register int
 // #define ll long long
@@ -60,28 +60,28 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 struct point{
-    int zb[2];
-    point(int _x=0,int _y=0){
-        zb[0]=_x,zb[1]=_y;
+    int zb[2],id;
+    point(int _x=0,int _y=0,int _i=0){
+        zb[0]=_x,zb[1]=_y,id=_i;
     }
 }tp[N],a[N];
-struct KDT{
-    int son[2],minn[2],maxn[2],si;
-    point p;
-    #define ls(p) tree[p].son[0]
-    #define rs(p) tree[p].son[1]
-}tree[N];
-int tot,root,top,st[N];
 bool cmpx(point &x,point &y){
     return x.zb[0]<y.zb[0];
 }
 bool cmpy(point &x,point &y){
     return x.zb[1]<y.zb[1];
 }
+struct KDT{
+    int son[2],minn[2],maxn[2],si;
+    point p;
+    #define ls(p) tree[p].son[0]
+    #define rs(p) tree[p].son[1]
+}tree[N];
+int root,tot,st[N],top;
 int bt(){
-    int now;
-    if(top)now=st[top--];
-    else now=++tot;
+    int now=++tot;
+    // if(top)now=st[top--];
+    // else now=++tot;
     ls(now)=rs(now)=0;
     return now;
 }
@@ -101,12 +101,12 @@ void pu(int now){
     return ;
 }
 int cnt;
-void shan(int now){
+void ren(int now){
     if(!now)return ;
-    st[++top]=now;
     tp[++cnt]=tree[now].p;
-    shan(ls(now));
-    shan(rs(now));
+    st[++top]=now;
+    ren(ls(now));
+    ren(rs(now));
     return ;
 }
 int rb(int l,int r,int d){
@@ -122,10 +122,10 @@ int rb(int l,int r,int d){
 void ck(int &now,int d){
     if(tree[ls(now)].si>tree[now].si*alpha&&tree[rs(now)].si>tree[now].si*alpha){
         cnt=0;
-        shan(now);
+        ren(now);
         now=rb(1,cnt,d);
     }
-    return ;
+    return;
 }
 void insert(int &now,point x,int d){
     if(!now){
@@ -140,73 +140,57 @@ void insert(int &now,point x,int d){
     ck(now,d);
     return ;
 }
-int disj(point x,int now){
-    int res=0;
-    for(int i=0;i<2;i++){
-        res+=max(0,tree[now].minn[i]-x.zb[i])+max(0,x.zb[i]-tree[now].maxn[i]);
-    }
-    return res;
+struct an{
+    int i,res;
+};
+bool operator <(const an &x,const an &y){
+    return x.res>y.res||(x.res==y.res&&x.i<y.i);
 }
+priority_queue <an> q;
 int disy(point x,int now){
     int res=0;
     for(int i=0;i<2;i++){
-        res+=max(0,tree[now].maxn[i]-x.zb[i])+max(0,x.zb[i]-tree[now].minn[i]);
+        res+=max((x.zb[i]-tree[now].minn[i])*(x.zb[i]-tree[now].minn[i]),(tree[now].maxn[i]-x.zb[i])*(tree[now].maxn[i]-x.zb[i]));
     }
     return res;
 }
 int dist(point x,point y){
-    return abs(x.zb[0]-y.zb[0])+abs(x.zb[1]-y.zb[1]);
+    return (x.zb[0]-y.zb[0])*(x.zb[0]-y.zb[0])+(x.zb[1]-y.zb[1])*(x.zb[1]-y.zb[1]);
 }
-int ans;
-void chaj(int now,point x){
-    int res=min(ans,dist(tree[now].p,x));
-    if(res>0)ans=res;
-    int dl=inf,dr=inf;
-    if(ls(now))dl=disj(x,now);
-    if(rs(now))dr=disj(x,now);
-    if(dl<dr){
-        if(dl<ans)chaj(ls(now),x);
-        if(dr<ans)chaj(rs(now),x);
+void cha(int now,point x){
+    // cout<<now<<" "<<x.zb[0]<<" "<<x.zb[1]<<endl;
+    int res=dist(x,tree[now].p);
+    if(res>q.top().res||(res==q.top().res&&tree[now].p.id<q.top().i)){
+        q.pop();
+        q.push({tree[now].p.id,res});
     }
-    else{
-        if(dr<ans)chaj(rs(now),x);
-        if(dl<ans)chaj(ls(now),x);
-    }
-    return;
-}
-void chay(int now,point x){
-    ans=max(ans,dist(tree[now].p,x));
-    int dl=0,dr=0;
-    if(ls(now))dl=disy(x,now);
-    if(rs(now))dr=disy(x,now);
+    int dl=-inf,dr=-inf;
+    if(ls(now))dl=disy(x,ls(now));
+    if(rs(now))dr=disy(x,rs(now));
     if(dl>dr){
-        if(dl>ans)chay(ls(now),x);
-        if(dr>ans)chay(rs(now),x);
+        if(dl>=q.top().res&&ls(now))cha(ls(now),x);
+        if(dr>=q.top().res&&rs(now))cha(rs(now),x);
     }
     else{
-        if(dr>ans)chay(rs(now),x);
-        if(dl>ans)chay(ls(now),x);
+        if(dr>=q.top().res&&rs(now))cha(rs(now),x);
+        if(dl>=q.top().res&&ls(now))cha(ls(now),x);
     }
-    return;
+    return ;
 }
-int resx[N],resd[N];
 signed main(){
-    int n=read();
+    int n=read(),k=read();
     for(int i=1;i<=n;i++){
-        a[i].zb[0]=read(),a[i].zb[1]=read();
+        a[i].zb[0]=read(),a[i].zb[1]=read(),a[i].id=i;
         tp[i]=a[i];
     }
     root=rb(1,n,0);
-    int res=inf; 
+    for(int j=1;j<=2*k;j++)q.push({0,-1});
     for(int i=1;i<=n;i++){
-        ans=inf;
-        chaj(root,a[i]);
-        resx[i]=ans;
-        ans=0;
-        chay(root,a[i]);
-        resd[i]=ans;
-        res=min(res,-resx[i]+resd[i]);
+        int x=a[i].zb[0],y=a[i].zb[1];
+        // cout<<"111"<<endl;
+        cha(root,point(x,y,0));
     }
-    cout<<res<<endl;
+    write(q.top().res);
+    puts("");
     return 0;
 }
