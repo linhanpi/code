@@ -2,10 +2,10 @@
  * @Author: watering_penguin 
  * @Date: 2023-03-02 15:41:42 
  * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-03-09 16:31:17
+ * @Last Modified time: 2023-03-10 18:41:42
  */
 #include<bits/stdc++.h>
-#define int long long
+#define int long long//信仰
 // #define uint unsigned int
 // #define rint register int
 // #define ll long long
@@ -65,15 +65,15 @@ struct node{
     int dao,val,fan;
 };
 vector <node> v[N];
-inline void jiabian(int a,int b,int w){
+inline void jiabian(int a,int b,int w){//vector 邪教
     v[a].push_back({b,w,(int)v[b].size()});
     v[b].push_back({a,0,(int)v[a].size()-1});
     return ;
 }
 int deep[N],gap[N],nowhu[N];
 int maxflow;
-void bfs(){
-    memset(deep,-1,sizeof(deep));
+void bfs(){//构建分层图
+    memset(deep,-1,sizeof(deep));//不初始化为 -1 会裂开
     memset(gap,0,sizeof(gap));
     deep[ed]=0;
     gap[0]=1;
@@ -92,23 +92,23 @@ void bfs(){
     } 
     return ;
 }
-int dfs(int now,int flow){
+int dfs(int now,int flow){//now 当前节点 flow 当前流
     if(now==ed){
         maxflow+=flow;
         return flow;
     }
     int used=0;
     for(int i=nowhu[now];i<(int)v[now].size();i++){
-        nowhu[now]=i;
+        nowhu[now]=i;//当前弧优化
         int y=v[now][i].dao;
-        if(v[now][i].val&&deep[y]+1==deep[now]){
+        if(v[now][i].val&&deep[y]+1==deep[now]){//剪枝:如果有容量再增广
             int maxn=dfs(y,min(v[now][i].val,flow-used));
             if(maxn){
                 v[now][i].val-=maxn;
                 v[y][v[now][i].fan].val+=maxn;
                 used+=maxn;
             }
-            if(used==flow)return used;
+            if(used==flow)return used;//剪枝:当前流被用完则返回
         }
     }
     --gap[deep[now]];
@@ -121,6 +121,7 @@ void ISAP(){
     maxflow=0;
     bfs();
     while(deep[st]<n)memset(nowhu,0,sizeof(nowhu)),dfs(st,inf);
+    //dfs 直到 St 与 Ed 不联通
     return ;
 }
 signed main(){
