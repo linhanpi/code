@@ -2,7 +2,7 @@
  * @Author: watering_penguin 
  * @Date: 2023-03-02 15:41:42 
  * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-03-11 14:33:10
+ * @Last Modified time: 2023-03-11 14:34:24
  */
 #include<bits/stdc++.h>
 #define int long long//信仰
@@ -60,23 +60,22 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 inline int fang(int x) {return x*x;}
-int n,m,st,ed;
+int n,m,tot,st,ed;
 struct node{
     int dao,val,fan;
 };
 vector <node> v[N];
-inline void jiabian(int a,int b,int w){//vector 邪教
+void jiabian(int a,int b,int w){
     v[a].push_back({b,w,(int)v[b].size()});
     v[b].push_back({a,0,(int)v[a].size()-1});
     return ;
 }
 int deep[N],gap[N],nowhu[N];
-int maxflow;
-void bfs(){//构建分层图
-    memset(deep,-1,sizeof(deep));//不初始化为 -1 会裂开
+void bfs(){
+    memset(deep,-1,sizeof(deep));
     memset(gap,0,sizeof(gap));
     deep[ed]=0;
-    gap[0]=1;
+    gap[deep[ed]]=1;
     queue <int> q;
     q.push(ed);
     while(!q.empty()){
@@ -85,34 +84,35 @@ void bfs(){//构建分层图
         for(int i=0;i<(int)v[now].size();i++){
             int y=v[now][i].dao;
             if(~deep[y])continue;
-            q.push(y);
             deep[y]=deep[now]+1;
             gap[deep[y]]++;
+            q.push(y);
         }
-    } 
+    }
     return ;
 }
-int dfs(int now,int flow){//now 当前节点 flow 当前流
+int maxflow;
+int dfs(int now,int flow){
     if(now==ed){
         maxflow+=flow;
         return flow;
     }
     int used=0;
     for(int i=nowhu[now];i<(int)v[now].size();i++){
-        nowhu[now]=i;//当前弧优化
         int y=v[now][i].dao;
-        if(v[now][i].val&&deep[y]+1==deep[now]){//剪枝:如果有容量再增广
+        nowhu[now]=i;
+        if(v[now][i].val&&deep[y]+1==deep[now]){
             int maxn=dfs(y,min(v[now][i].val,flow-used));
             if(maxn){
                 v[now][i].val-=maxn;
                 v[y][v[now][i].fan].val+=maxn;
                 used+=maxn;
             }
-            if(used==flow)return used;//剪枝:当前流被用完则返回
+            if(used==flow)return used;
         }
     }
-    --gap[deep[now]];
-    if(!gap[deep[now]])deep[st]=n+1;
+    gap[deep[now]]--;
+    if(!gap[deep[now]])deep[st]=tot+1;
     deep[now]++;
     gap[deep[now]]++;
     return used;
@@ -120,15 +120,22 @@ int dfs(int now,int flow){//now 当前节点 flow 当前流
 void ISAP(){
     maxflow=0;
     bfs();
-    while(deep[st]<n)memset(nowhu,0,sizeof(nowhu)),dfs(st,inf);
-    //dfs 直到 St 与 Ed 不联通
+    while(deep[st]<tot)memset(nowhu,0,sizeof(nowhu)),dfs(st,inf);
     return ;
 }
 signed main(){
-    n=read(),m=read(),st=read(),ed=read();
+    n=read(),m=read();
+    int c1=read(),c2=read();
+    tot=n*2;
+    st=c1+n,ed=c2;
+    for(int i=1;i<=n;i++){
+        // if(i==c1||i==c2)jiabian(i,i+n,inf);
+        jiabian(i,i+n,1);
+    }
     for(int i=1;i<=m;i++){
-        int a=read(),b=read(),w=read();
-        jiabian(a,b,w);
+        int a=read(),b=read();
+        jiabian(a+n,b,1);
+        jiabian(b+n,a,1);
     }
     ISAP();
     cout<<maxflow<<endl;
