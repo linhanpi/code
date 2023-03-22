@@ -60,19 +60,19 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 inline int fang(int x) {return x*x;}
-int n,m,st,ed;
+int n,m,st,ed,tot;
 struct node{
     int dao,liu,fei,fan;
 };
-vector <node> v[N];//vector 邪教
+vector <node> v[N];
 void jiabian(int x,int y,int w,int f){
     v[x].push_back({y,w,f,(int)v[y].size()});
     v[y].push_back({x,0,-f,(int)v[x].size()-1});
     return ;
 }
 int dist[N],in[N],nowhu[N];
-inline bool spfa(){//spfa分层
-    for(int i=1;i<=n;i++)dist[i]=inf;
+inline bool spfa(){
+    for(int i=1;i<=tot;i++)dist[i]=inf;
     memset(in,0,sizeof(in));
     queue <int> q;
     q.push(st);
@@ -84,12 +84,12 @@ inline bool spfa(){//spfa分层
         for(int i=0;i<(int)v[now].size();i++){
             int y=v[now][i].dao;
             int liu=v[now][i].liu,fei=v[now][i].fei;
-            if(dist[y]<=dist[now]+fei||!liu)continue;//注意有残余容量的边才在残量网络上
+            if(dist[y]<=dist[now]+fei||!liu)continue;
             dist[y]=dist[now]+fei;
             if(!in[y])q.push(y),in[y]=1;
         }
     }
-    return dist[ed]!=inf;//st ed 不连通则退出
+    return dist[ed]!=inf;
 }
 int maxflow,minfei;
 int dfs(int now,int flow){
@@ -104,7 +104,6 @@ int dfs(int now,int flow){
         int maxn=dfs(y,min(liu,flow-used));
         if(!maxn)dist[y]=inf;
         else minfei+=maxn*fei,v[now][i].liu-=maxn,v[y][v[now][i].fan].liu+=maxn,used+=maxn;
-        //统计费用，更新残余网络
         if(used==flow)break;
     }
     in[now]=0;
@@ -118,13 +117,37 @@ inline void Dinic(){
     }
     return ;
 }
+int haxi1(int a){
+    return a;
+}
+int haxi2(int a){
+    return a+n;
+}
 signed main(){
-    n=read(),m=read(),st=read(),ed=read();
-    for(int i=1;i<=m;i++){
-        int a=read(),b=read(),liu=read(),fei=read();
-        jiabian(a,b,liu,fei);
+    n=read();
+    tot=2*n;
+    st=++tot,ed=++tot;
+    for(int i=1;i<=n;i++){
+        int a=read();
+        if(i!=n)jiabian(haxi2(i),haxi2(i+1),inf,0);
+        jiabian(haxi1(i),ed,a,0);
+        jiabian(st,haxi2(i),a,0);
+    }
+    int a=read();
+    // cout<<a<<endl;
+    for(int i=1;i<=n;i++){
+        jiabian(st,haxi1(i),inf,a);
+    }
+    a=read();
+    int b=read();
+    for(int i=1;i<=n-a;i++){
+        jiabian(haxi2(i),haxi1(i+a),inf,b);
+    }
+    a=read(),b=read();
+    for(int i=1;i<=n-a;i++){
+        jiabian(haxi2(i),haxi1(i+a),inf,b);
     }
     Dinic();
-    cout<<maxflow<<" "<<minfei<<endl;
+    cout<<minfei<<endl;
     return 0;
 }

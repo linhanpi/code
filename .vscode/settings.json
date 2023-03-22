@@ -3,7 +3,8 @@
     "files.associations": {
         "ostream": "cpp",
         "iostream": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "numbers": "cpp"
     },
     "commentTranslate.hover.enabled": true,
     "commentTranslate.source": "DarkCWK.youdao-youdao",
