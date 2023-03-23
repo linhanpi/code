@@ -36,7 +36,7 @@ template<typename T>inline void write(T x) {
 	putchar((x%10)^48);
 	return;
 }
-const int N=5e3+5;
+const int N=2e2+5;
 const int M=6e4+5;
 const int mo=7000007;
 const int inf=INT_MAX;
@@ -117,37 +117,80 @@ inline void Dinic(){
     }
     return ;
 }
-int haxi1(int a){
-    return a;
-}
-int haxi2(int a){
-    return a+n;
-}
+string s[N];
+map <string,int> mp;
+int ne[N];
+bool vis[N];
 signed main(){
-    n=read();
-    tot=2*n;
-    st=++tot,ed=++tot;
+    n=read(),m=read();
     for(int i=1;i<=n;i++){
-        int a=read();
-        if(i!=n)jiabian(haxi2(i),haxi2(i+1),inf,0);
-        jiabian(haxi1(i),ed,a,0);
-        jiabian(st,haxi2(i),a,0);
+        cin>>s[i];
+        mp[s[i]]=i;
+        if(i==1||i==n)jiabian(i,i+n,2,0);
+        else jiabian(i,i+n,1,0);
     }
-    int a=read();
-    // cout<<a<<endl;
-    for(int i=1;i<=n;i++){
-        jiabian(st,haxi1(i),inf,a);
-    }
-    a=read();
-    int b=read();
-    for(int i=1;i<=n-a;i++){
-        jiabian(haxi2(i),haxi1(i+a),inf,b);
-    }
-    a=read(),b=read();
-    for(int i=1;i<=n-a;i++){
-        jiabian(haxi2(i),haxi1(i+a),inf,b);
+    st=1,ed=n+n;
+    tot=ed;
+    bool flag=0;
+    for(int i=1;i<=m;i++){
+        string A,B;
+        cin>>A>>B;
+        int a=mp[A],b=mp[B];
+        if(a>b)swap(a,b);
+        if(a==1&&b==n)flag=1;
+        jiabian(a+n,b,1,-1);
     }
     Dinic();
-    cout<<minfei<<endl;
+    if(maxflow!=2&&!flag){
+        puts("No Solution!");
+        return 0;
+    }
+    if(maxflow!=2&&flag){
+        cout<<2<<endl;
+        cout<<s[1]<<endl;
+        cout<<s[n]<<endl;
+        cout<<s[1]<<endl;
+        return 0;
+    }
+    cout<<-minfei<<endl;
+    for(int i=1;i<=n;i++){
+        for(int j=0;j<(int)v[i+n].size();j++){
+            int y=v[i+n][j].dao;
+            if(y==i)continue;
+            if(i>y)continue;
+            if(!v[i+n][j].liu){
+                ne[i]=y;
+                break;
+            }
+        }
+    }
+    int now=1;
+    while(now!=n){
+        vis[now]=1;
+        cout<<s[now]<<endl;
+        now=ne[now];
+    }
+    vis[n]=0;
+    vis[1]=0;
+    for(int i=1;i<=n;i++){
+        for(int j=0;j<(int)v[i+n].size();j++){
+            int y=v[i+n][j].dao;
+            if(y==i)continue;
+            if(i>y)continue;
+            if(v[i+n][j].liu)continue;
+            if(vis[y])continue;
+            if(vis[i])continue;
+            if(!v[i+n][j].liu){
+                ne[y]=i;
+                break;
+            }
+        }
+    }
+    now=n;
+    while(now!=1){
+        cout<<s[now]<<endl;
+        now=ne[now];
+    }
+    cout<<s[1]<<endl;
     return 0;
 }
