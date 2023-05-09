@@ -1,3 +1,0 @@
-# nemo
-
-$I\ love\ nemo$
