@@ -4,7 +4,14 @@
         "ostream": "cpp",
         "iostream": "cpp",
         "chrono": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "array": "cpp",
+        "fstream": "cpp",
+        "future": "cpp",
+        "shared_mutex": "cpp",
+        "sstream": "cpp",
+        "thread": "cpp",
+        "tuple": "cpp"
     },
     "commentTranslate.hover.enabled": true,
     "commentTranslate.source": "DarkCWK.youdao-youdao",
