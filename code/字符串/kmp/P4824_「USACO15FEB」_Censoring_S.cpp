@@ -5,7 +5,7 @@
  * @Last Modified time: 2023-03-11 14:33:10
  */
 #include<bits/stdc++.h>
-#define int long long//信仰
+// #define int long long//信仰
 // #define uint unsigned int
 // #define rint register int
 // #define ll long long
@@ -37,12 +37,11 @@ template<typename T>inline void write(T x) {
 	return;
 }
 const int N=1e6+5;
-const int M=25+5;
+const int M=1e2+5;
 const int mo=7000007;
 const int inf=INT_MAX;
 const int base=131;
-// const int mod=1e9+7;
-int mod=1e4+7;
+const int mod=1e4+7;
 const double eps=1e-6;
 const double alpha=0.75;
 const pii lpii={0,0};
@@ -61,53 +60,28 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 inline int fang(int x) {return x*x;}
-char a[M];
-int ne[M];
-int g[M][M];
-struct no{
-	int a[25][25];
-	no(){
-		memset(a,0,sizeof(a));
-	}
-}A,B;
-no operator *(const no &x,const no &y){
-	no c;
-	for(int i=0;i<=20;i++){
-		for(int j=0;j<=20;j++){
-			for(int k=0;k<=20;k++){
-				c.a[i][j]=(c.a[i][j]+x.a[i][k]*y.a[k][j])%mod;
-			}
-		}
-	}
-	return c;
-}
+char s1[N],s2[N];
+int sta[N];
+int nee[N],ne[N];
+int top;
 signed main(){
-	int n=read(),m=read();mod=read();
-    scanf("%s",a+1);
+	scanf("%s",s1+1);
+    scanf("%s",s2+1);
+    int n=strlen(s1+1),m=strlen(s2+1);
     for(int i=2,j=0;i<=m;i++){
-        while(j&&a[j+1]!=a[i])j=ne[j];
-        if(a[j+1]==a[i])j++;
+        while(j&&s2[j+1]!=s2[i])j=ne[j];
+        j+=(s2[j+1]==s2[i]);
         ne[i]=j;
     }
-    for(int i=0;i<m;i++){
-        for(int j=0;j<=9;j++){
-            int p=i;
-            while(p&&a[p+1]-'0'!=j)p=ne[p];
-            if(a[p+1]-'0'==j)p++;
-            if(p<m)B.a[i][p]++;
-            // cout<<"i "<<i<<" "<<j<<" "<<p<<endl;
-        }
+    nee[0]=0;
+    for(int i=1,j=0;i<=n;i++){
+        while(j&&s1[i]!=s2[j+1])j=ne[j];
+        j+=(s2[j+1]==s1[i]);
+        nee[i]=j;sta[++top]=i;
+        if(j==m)top-=m,j=nee[sta[top]];
     }
-    A.a[0][0]=1;
-    while(n){
-        if(n&1)A=A*B;
-        B=B*B;
-        n>>=1;
+    for(int i=1;i<=top;i++){
+        cout<<s1[sta[i]];
     }
-    int ans=0;
-    for(int i=0;i<m;i++){
-        ans=(ans+A.a[0][i])%mod;
-    }
-    cout<<ans<<endl;
     return 0;
 }
