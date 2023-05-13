@@ -59,36 +59,8 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 inline int fang(int x) {return x*x;}
-char s[N];
-int p[N];
-int cnt=1;
-inline void mlcqd(){
-    char ch=getchar();
-    while(!isalpha(ch))ch=getchar();
-    s[0]='~',s[1]='|';
-    while(isalpha(ch)){
-        s[++cnt]=ch,s[++cnt]='|';ch=getchar();
-    }
-    return ;
-}
+
 signed main(){
-	int n=read();
-    mlcqd();
-    int ans=0;
-    for(int i=1,r=0,mid=0;i<=cnt;i++){
-        p[i]=min(p[(mid<<1)-i],r-i+1);
-        while(s[i-p[i]]==s[i+p[i]])p[i]++;
-        if(i+p[i]-1>r){
-            if(s[i]=='|')for(int j=max(r-i+1,5ll);j<=p[i];j++){
-                if(s[i+j-1]!='|')continue;
-                if((i+i-j+1)&1)continue;
-                if(!(((i+i-j+1)>>1)&1))continue;
-                if(((i+i-j+1)>>1)+p[(i+i-j+1)>>1]-1>=i)ans=max(ans,j);
-            }
-            r=i+p[i]-1;
-            mid=i;
-        }
-    }
-    cout<<ans-1<<endl;
+	
 	return 0;
 }
