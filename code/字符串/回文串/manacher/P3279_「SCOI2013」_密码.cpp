@@ -59,8 +59,53 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 inline int fang(int x) {return x*x;}
-
+int p[N];
+int f[N];
+char s[N];
+inline int get(int x){
+    if(f[x]==x)return x;
+    return f[x]=get(f[x]);
+}
+vector <int> v[N];
+bool vis[26];
 signed main(){
-	
+	int n=read();
+    int len=n*2+1;
+    for(int i=1;i<=n;i++)f[i]=i;
+    for(int i=1;i<=n;i++){
+        p[i*2]=read()+1;
+    }
+    for(int i=1;i<n;i++){
+        p[i*2+1]=read()+1;
+    }
+    p[1]=1,p[len]=1;
+    for(int i=1,r=0,mid=0;i<=len;i++){
+        int re=min(p[(mid<<1)-i],r-i+1)+1;
+        for(;re<=p[i];re++){
+            if((i+re-1)&1)continue;
+            int fx=get((i+re-1)/2);
+            int fy=get((i-re+1)/2);
+            if(fx!=fy)f[fx]=fy;
+        }
+        v[(i+p[i])/2].push_back((i-p[i])/2),v[(i-p[i])/2].push_back((i+p[i])/2);
+        if(i+p[i]-1>r){
+            r=i+p[i]-1;
+            mid=i;
+        }
+    }
+    for(int i=1;i<=n;i++){
+        if(!s[get(i)]){
+            memset(vis,0,sizeof(vis));
+            for(int y:v[i])if(s[get(y)])vis[s[get(y)]-'a']=1;
+            for(int j=0;j<26;j++){
+                if(!vis[j]){
+                    s[get(i)]=j+'a';
+                    break;
+                }
+            }
+        }
+        else s[i]=s[get(i)];
+        cout<<s[i];
+    }
 	return 0;
 }
