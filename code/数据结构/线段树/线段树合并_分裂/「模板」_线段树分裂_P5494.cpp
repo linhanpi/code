@@ -1,9 +1,3 @@
-/*
- * @Author: watering_penguin 
- * @Date: 2023-02-03 21:49:51 
- * @Last Modified by:   watering_penguin 
- * @Last Modified time: 2023-02-03 21:49:51 
- */
 #include<bits/stdc++.h>
 // #define int long long
 #define ll long long

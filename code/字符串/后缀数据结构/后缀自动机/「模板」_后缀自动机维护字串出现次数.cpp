@@ -1,9 +1,3 @@
-/*
- * @Author: watering_penguin 
- * @Date: 2023-03-02 15:41:42 
- * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-03-11 14:33:10
- */
 #include<bits/stdc++.h>
 // #define int long long//信仰
 // #define uint unsigned int

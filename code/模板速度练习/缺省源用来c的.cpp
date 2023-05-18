@@ -32,6 +32,7 @@ template<typename T>inline void write(T x) {
 }
 const int N=1e6+5;
 const int M=1e2+5;
+const int bzt=18;
 const int inf=INT_MAX;
 const int base=131;
 const int mod=1e4+7;
