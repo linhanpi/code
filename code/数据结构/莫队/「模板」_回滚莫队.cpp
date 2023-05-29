@@ -1,10 +1,3 @@
-/*
- * @Author: watering_penguin 
- * @Date: 2023-02-10 09:41:58 
- * @Last Modified by: watering_penguin
- * @Last Modified time: 2023-02-10 09:48:17
- */
-
 #include<bits/stdc++.h>
 #define int long long
 // #define uint unsigned int

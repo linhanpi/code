@@ -30,7 +30,7 @@ template<typename T>inline void write(T x) {
 	putchar((x%10)^48);
 	return;
 }
-const int N=1e6+5;
+const int N=5e5+5;
 const int M=1e2+5;
 const int bzt=18;
 const int inf=INT_MAX;
@@ -60,8 +60,53 @@ inline int qmi(int x,int y,int mod){
 inline int dc1(int x) {return x*(x+1)/2;}
 inline int dc2(int x) {return x*(x+1)*(x+x+1)/6;}
 inline int fang(int x) {return x*x;}
-
+int a[N],vis[N];
+vector <int> v[N];
+int dp[N][25],g[N][25];
+int n,d;
+void dfs(int now,int fa){
+    if(vis[now])dp[now][0]=g[now][0]=a[now];
+    else dp[now][0]=g[now][0]=0;
+    for(int i=1;i<=d;i++)dp[now][i]=a[now];
+    for(int y:v[now]){
+        if(y==fa)continue;
+        dfs(y,now);
+        for(int j=d;j>=0;j--){
+            dp[now][j]=min(dp[now][j]+g[y][j],dp[y][j+1]+g[now][j+1]);
+        }
+        for(int j=d;j>=0;j--)dp[now][j]=min(dp[now][j+1],dp[now][j]);
+        g[now][0]=dp[now][0];
+        for(int j=1;j<=d+1;j++){
+            g[now][j]=g[now][j]+g[y][j-1];
+        }
+        for(int j=1;j<=d+1;j++){
+            g[now][j]=min(g[now][j],g[now][j-1]);
+        }
+    }
+    for(int j=d;j>=0;j--){
+        dp[now][j]=min(dp[now][j+1],dp[now][j]);
+    }
+    for(int j=1;j<=d+1;j++){
+        g[now][j]=min(g[now][j],g[now][j-1]);
+    }
+    return ;
+}
 signed main(){
-	
+    memset(dp,0x3f,sizeof(dp));
+	n=read(),d=read();
+    for(int i=1;i<=n;i++)a[i]=read();
+    int m=read();
+    for(int i=1;i<=m;i++){
+        vis[read()]=1;
+    }
+    for(int i=1;i<n;i++){
+        int a=read(),b=read();
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+    dfs(1,0);
+    int ans=inf;
+    for(int i=0;i<=d;i++)ans=min(ans,dp[1][i]);
+    cout<<ans<<endl;
 	return 0;
 }
