@@ -12,7 +12,7 @@ using namespace std;
 #define read() (red<int>())
 template<typename T>inline T red(){T x=0;bool f=false;char c=getchar();while(c<'0'||c>'9'){if(c=='-')f=true;c=getchar();}while(c>='0'&&c<='9')x=(x<<3)+(x<<1)+(c^48),c=getchar();return f?-x:x;}
 template<typename T>inline void write(T x){if(x<0){putchar('-');x=-x;}if(x/10)write(x/10);putchar((x%10)^48);return;}
-const int N=1e6+5;
+const int N=1e2+5;
 const int M=1e2+5;
 const int bzt=18;
 const int inf=INT_MAX;
@@ -35,7 +35,61 @@ inline int mjia(int x,int y){return (x+y)%mod;}
 inline int mjian(int x,int y){return (x-y+mod)%mod;}
 inline int mcheng(int x,int y){return (x*y)%mod;}
 inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
+struct node{
+    int x,y,id;
+}jd[N],wl[N];
+int dp[N][N][N];
+inline double uj(node x,node y){
+    return sqrt(fang(x.x-y.x)+fang(x.y-y.y));
+}
+bool operator <(const node &x,const node &y){
+    if(x.id!=y.id)return x.id<y.id;
+    return x.x<y.x;
+}
 signed main(){
-	
+	int n=read(),m=read(),R=read();
+    for(int i=1;i<=n;i++){
+        jd[i].x=read(),jd[i].y=read();
+    }
+    for(int i=1;i<=m;i++){
+        wl[i].x=read(),wl[i].y=read(),wl[i].id=read();
+    }
+    int tot=n;
+    for(int i=1;i<=n;i++){
+        bool flag=1;
+        for(int j=1;j<=m;j++){
+            if(uj(jd[i],wl[j])<=R){
+                flag=0;
+            }
+        }
+        if(flag){
+            tot--;
+            jd[i].id=1;
+        }
+    }
+    sort(jd+1,jd+n+1);
+    n=tot;
+    cout<<tot<<endl;
+    memset(dp,0x3f,sizeof(dp));
+    dp[0][0][0]=0;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<=m;j++){
+            for(int k=0;k<=m;k++){
+                for(int t=1;t<=m;t++){
+                    if(uj(jd[i+1],wl[t])<=R){
+                        if(wl[t].y>R)dp[i+1][j][t]=min(dp[i+1][j][t],dp[i][j][k]+(k!=t)*wl[t].id);
+                        else dp[i+1][t][k]=min(dp[i+1][t][k],dp[i][j][k]+(j!=t)*wl[t].id);
+                    }
+                }
+            }
+        }
+    }
+    int ans=inf;
+    for(int i=0;i<=m;i++){
+        for(int j=0;j<=m;j++){
+            ans=min(ans,dp[n][i][j]);
+        }
+    }
+    cout<<ans<<endl;
 	return 0;
 }

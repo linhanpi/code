@@ -85,5 +85,8 @@
     },
     "commentTranslate.hover.enabled": true,
     "commentTranslate.source": "DarkCWK.youdao-youdao",
-    "commentTranslate.targetLanguage": "zh-CN"
+    "commentTranslate.targetLanguage": "zh-CN",
+    "workbench.editorAssociations": {
+        "*.md": "default"
+    }
 }
