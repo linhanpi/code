@@ -12,7 +12,7 @@ using namespace std;
 #define read() (red<int>())
 template<typename T>inline T red(){T x=0;bool f=false;char c=getchar();while(c<'0'||c>'9'){if(c=='-')f=true;c=getchar();}while(c>='0'&&c<='9')x=(x<<3)+(x<<1)+(c^48),c=getchar();return f?-x:x;}
 template<typename T>inline void write(T x){if(x<0){putchar('-');x=-x;}if(x/10)write(x/10);putchar((x%10)^48);return;}
-const int N=1e6+5;
+const int N=1e3+5;
 const int M=1e2+5;
 const int bzt=18;
 const int inf=INT_MAX;
@@ -35,7 +35,37 @@ inline int mjia(int x,int y){return (x+y)%mod;}
 inline int mjian(int x,int y){return (x-y+mod)%mod;}
 inline int mcheng(int x,int y){return (x*y)%mod;}
 inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
+int maxn[N][N],minn[N][N];
 signed main(){
-	
+	int n=read(),A=read(),B=read();
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=n;j++){
+			char x;cin>>x;
+			if(i==j||x=='=')maxn[i][j]=minn[i][j]=0;
+			else if(x=='+')maxn[i][j]=2,minn[i][j]=1;
+			else if(x=='-')maxn[i][j]=-1,minn[i][j]=-2;
+			else if(x=='?')maxn[i][j]=2,minn[i][j]=-2;
+		}
+	}
+	for(int k=1;k<=n;k++){
+		for(int i=1;i<=n;i++){
+			for(int j=1;j<=n;j++){
+				maxn[i][j]=min(maxn[i][j],maxn[i][k]+maxn[k][j]);
+				minn[i][j]=max(minn[i][j],minn[i][k]+minn[k][j]);
+			}
+		}
+	}
+	int lcnt=0,ecnt=0,rcnt=0;
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<i;j++){
+			if(i==A||i==B)break;
+			if(j==A||j==B)continue;
+			if(minn[A][i]>maxn[j][B]||minn[A][j]>maxn[i][B])lcnt++;
+			if(minn[A][i]==maxn[A][i]&&minn[A][i]==minn[j][B]&&minn[j][B]==maxn[j][B])ecnt++;
+			else if(minn[B][i]==maxn[B][i]&&minn[B][i]==minn[j][A]&&minn[j][A]==maxn[j][A])ecnt++;
+			if(maxn[A][i]<minn[j][B]||maxn[A][j]<minn[i][B])rcnt++;
+		}
+	}
+	cout<<lcnt<<" "<<ecnt<<" "<<rcnt<<endl;
 	return 0;
 }
