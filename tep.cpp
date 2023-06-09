@@ -1,45 +1,78 @@
+//#pragma GCC optimize(3)
+ 
 #include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+ 
 using namespace std;
-const int N = 1e5 + 5, X = 39989, Y = 1e9;
-int n, cnt, mx[X << 2];
-double k[N], b[N];
-double get(int x, int id) {return k[id] * x + b[id];}
-int get(int a, int c, int x) {
-	double b = get(x, a), d = get(x, c);
-	return b == d ? min(a, c) : b > d ? a : c;
-}
-void modify(int l, int r, int x, int v) {
-	int m = l + r >> 1;
-	if(get(m, v) > get(m, mx[x])) swap(mx[x], v);
-	if(get(l, v) > get(l, mx[x])) modify(l, m, x << 1, v);
-	else if(get(r, v) > get(r, mx[x])) modify(m + 1, r, x << 1 | 1, v);
-}
-void modify(int l, int r, int ql, int qr, int x, int v) {
-	if(ql <= l && r <= qr) return modify(l, r, x, v);
-	int m = l + r >> 1;
-	if(ql <= m) modify(l, m, ql, qr, x << 1, v);
-	if(m < qr) modify(m + 1, r, ql, qr, x << 1 | 1, v);
-}
-int query(int l, int r, int x, int p) {
-	if(l == r) return mx[x];
-	int m = l + r >> 1;
-	if(p <= m) return get(query(l, m, x << 1, p), mx[x], p);
-	return get(query(m + 1, r, x << 1 | 1, p), mx[x], p);
-}
-int main() {
-	cin >> n;
-	for(int i = 1, las = 0; i <= n; i++) {
-		int op, c, d, e, f;
-		scanf("%d %d", &op, &c), c = (c + las - 1) % X + 1;
-		if(op == 0) printf("%d\n", las = query(1, X, 1, c));
-		else {
-			scanf("%d %d %d", &d, &e, &f), e = (e + las - 1) % X + 1;
-			d = (d + las - 1) % Y + 1, f = (f + las - 1) % Y + 1;
-			if(c > e) swap(c, e), swap(d, f);
-			if(c == e) b[++cnt] = max(d, f);
-			else k[++cnt] = (double)(f - d) / (e - c), b[cnt] = d - c * k[cnt];
-			modify(1, X, c, e, 1, cnt);
-		}
+using namespace __gnu_pbds;
+ 
+#define db double
+#define ll long long
+#define ld long double
+#define uint unsigned int
+#define ull unsigned long long
+#define vint vector <int>
+#define vpii vector <pii>
+ 
+#define pii pair <int, int>
+#define pll pair <ll, ll>
+#define fi first
+#define se second
+#define pb emplace_back
+#define all(x) begin(x), end(x)
+#define rev(x) reverse(all(x))
+#define sor(x) sort(all(x))
+#define mem(x, v, s) memset(x, v, sizeof(x[0]) * (s))
+#define cpy(x, y, s) memcpy(x, y, sizeof(x[0]) * (s))
+#define FileI(x) freopen(x, "r", stdin)
+#define FileO(x) freopen(x, "w", stdout)
+#define y1 y_chenxiaoyan_1
+ 
+bool Mbe;
+namespace IO {
+	char buf[1 << 21], *p1 = buf, *p2 = buf, Obuf[1 << 24], *O = Obuf;
+	#define gc getchar()
+//	#define gc (p1 == p2 && (p2 = (p1 = buf) + \
+		fread(buf, 1, 1 << 21, stdin), p1 == p2) ? EOF : *p1++)
+	#define pc(x) (*O++ = x)
+	#define flush() fwrite(Obuf, 1, O - Obuf, stdout)
+	inline ll read() {
+		ll x = 0; bool sgn = 0; char s = gc;
+		while(!isdigit(s)) sgn |= s == '-', s = gc;
+		while(isdigit(s)) x = x * 10 + s - '0', s = gc;
+		return sgn ? -x : x;
 	}
-	return 0;
+	template <class T>
+		inline void rprint(T x) {if(x >= 10) rprint(x / 10); pc(x % 10 + '0');}
+	template <class T>
+		inline void print(T x) {if(x < 0) pc('-'), x = -x; rprint(x);}
+} using namespace IO;
+ 
+template <class T1, class T2> void cmin(T1 &a, T2 b){a = a < b ? a : b;}
+template <class T1, class T2> void cmax(T1 &a, T2 b){a = a > b ? a : b;}
+ 
+const int N = 2e3 + 5;
+const ld eps = 1e-10;
+struct DP {ld res; int x, y;} f[N];
+int n, a, b;
+ld ans, la, ra = 1, p[N], u[N];
+int main() {
+	cin >> n >> a >> b;
+	for(int i = 1; i <= n; i++) cin >> p[i];
+	for(int i = 1; i <= n; i++) cin >> u[i];
+	for(int _a = 1; _a <= 40; _a++) {
+		ld ma = (la + ra) / 2, lb = 0, rb = 1;
+		for(int _b = 1; _b <= 40; _b++) {
+			ld mb = (lb + rb) / 2;
+			for(int i = 1; i <= n; i++) {
+				ld val; f[i] = f[i - 1];
+				if((val = f[i - 1].res + p[i] - ma) > f[i].res + eps) f[i] = {val, f[i - 1].x + 1, f[i - 1].y};
+				if((val = f[i - 1].res + u[i] - mb) > f[i].res + eps) f[i] = {val, f[i - 1].x, f[i - 1].y + 1};
+				if((val = f[i - 1].res + p[i] + u[i] - p[i] * u[i] - ma - mb) > f[i].res + eps)
+					f[i] = {val, f[i - 1].x + 1, f[i - 1].y + 1};
+			} if(f[n].y == b) {lb = rb = mb; break;}
+			f[n].y <= b ? rb = mb : lb = mb;
+		} f[n].x <= a ? (ra = ma, ans = f[n].res + a * ma + b * lb) : la = ma;
+	} printf("%.9LF\n", ans);
+	return flush(), 0;
 }

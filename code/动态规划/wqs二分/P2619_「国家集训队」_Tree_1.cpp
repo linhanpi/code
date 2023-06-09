@@ -38,33 +38,59 @@ inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
 inline bool dengyu(double x,double y){return abs(x-y)<=eps;}
 inline bool dayu(double x,double y){return x-y>=eps;}
 inline bool xiaoyu(double x,double y){return y-x>=eps;}
-struct juzheng{
-	int a,b,c,d;
-	juzheng(){a=b=c=d=0;}
-};
-juzheng operator *(const juzheng &x,const juzheng &y){
-	juzheng c;
-	c.a=max(x.a+y.a,x.b+y.c);
-	c.b=max(x.a+y.b,x.b+y.d);
-	c.c=max(x.c+y.a,x.d+y.c);
-	c.d=max(x.c+y.c,x.d+y.d);
-	return c;
+struct bian{
+    int qi,dao,quan;
+    bool id;
+}e[N];
+bool operator <(const bian &x,const bian &y){
+    return x.quan<y.quan;
 }
-int a[N];
-int si[N],fa[N];
-vector <int> v;
-int f[N][2],g[N][2];
-void dfs1(int now,int fath){
-	dp[now][1]=a[now],si[now]=1,deep[now]=deep[fa[now]]+1;
-	for(int y:v[now]){
-		if(y==fath)continue;
-		fa[y]=fath;
-		
-	}
-	return ;
+int n,m,mw,k;
+int f[N];
+int get(int x){
+    if(x==f[x])return x;
+    return f[x]=get(f[x]);
+}
+inline bool add(int x){
+    if(get(e[x].qi)==get(e[x].dao))return 0;
+    f[f[e[x].qi]]=f[e[x].dao];
+    return 1;
+}
+bool ck(int mid){
+    for(int i=1;i<=n;i++)f[i]=i;
+    int ans=0;
+    int i=1,j=mw+1;
+    while(i<=mw&&j<=m){
+        if(e[i].quan-mid<=e[j].quan)ans+=add(i),i++;
+        else add(j),j++;
+    }
+    while(i<=mw)ans+=add(i),i++;
+    // cout<<mid<<" "<<ans<<endl;
+    return ans<=k;
 }
 signed main(){
-	int n=read(),q=read();
-
+	n=read(),mw=0,m=read(),k=read();
+    for(int i=1;i<=m;i++){
+        e[i].qi=read()+1,e[i].dao=read()+1,e[i].quan=read(),e[i].id=read();
+        if(!e[i].id)swap(e[++mw],e[i]);
+    }
+    sort(e+1,e+mw+1);
+    sort(e+mw+1,e+m+1);
+    int l=-100,r=100;
+    while(l<r){
+        int mid=(l+r)>>1;
+        if(ck(mid))l=mid+1;
+        else r=mid;
+    }
+    for(int i=1;i<=n;i++)f[i]=i;
+    int ans=0;
+    int i=1,j=mw+1;
+    while(i<=mw&&j<=m){
+        if(e[i].quan-l<=e[j].quan)ans+=(e[i].quan-l)*add(i),i++;
+        else ans+=e[j].quan*add(j),j++;
+    }
+    while(i<=mw)ans+=(e[i].quan-l)*add(i),i++;
+    while(j<=m)ans+=e[j].quan*add(j),j++;
+    cout<<ans+k*l<<endl;
 	return 0;
 }

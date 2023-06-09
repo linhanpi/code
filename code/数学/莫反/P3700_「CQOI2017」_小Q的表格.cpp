@@ -12,7 +12,7 @@ using namespace std;
 #define read() (red<int>())
 template<typename T>inline T red(){T x=0;bool f=false;char c=getchar();while(c<'0'||c>'9'){if(c=='-')f=true;c=getchar();}while(c>='0'&&c<='9')x=(x<<3)+(x<<1)+(c^48),c=getchar();return f?-x:x;}
 template<typename T>inline void write(T x){if(x<0){putchar('-');x=-x;}if(x/10)write(x/10);putchar((x%10)^48);return;}
-const int N=1e6+5;
+const int N=4e6+5;
 const int M=1e2+5;
 const int bzt=18;
 const int inf=INT_MAX;
@@ -38,33 +38,64 @@ inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
 inline bool dengyu(double x,double y){return abs(x-y)<=eps;}
 inline bool dayu(double x,double y){return x-y>=eps;}
 inline bool xiaoyu(double x,double y){return y-x>=eps;}
-struct juzheng{
-	int a,b,c,d;
-	juzheng(){a=b=c=d=0;}
-};
-juzheng operator *(const juzheng &x,const juzheng &y){
-	juzheng c;
-	c.a=max(x.a+y.a,x.b+y.c);
-	c.b=max(x.a+y.b,x.b+y.d);
-	c.c=max(x.c+y.a,x.d+y.c);
-	c.d=max(x.c+y.c,x.d+y.d);
-	return c;
+int c[N];
+int n;
+inline void add(int x,int y){
+    for(int i=x;i<=n;i+=lowbit(i))c[i]=(c[i]+y+mod)%mod;
+    return ;
 }
-int a[N];
-int si[N],fa[N];
-vector <int> v;
-int f[N][2],g[N][2];
-void dfs1(int now,int fath){
-	dp[now][1]=a[now],si[now]=1,deep[now]=deep[fa[now]]+1;
-	for(int y:v[now]){
-		if(y==fath)continue;
-		fa[y]=fath;
-		
-	}
-	return ;
+inline int cha(int x){
+    int res=0;
+    for(int i=x;i;i-=lowbit(i))res=(res+c[i]+mod)%mod;
+    return res;
 }
+int p[N],tot,vis[N];
+int miu[N],w[N],qian[N];
+void ycl(){
+    miu[1]=1;
+    for(int i=2;i<=N-5;i++){
+        if(!vis[i])p[++tot]=i,miu[i]=mod-1;
+        for(int j=1;j<=tot&&i*p[j]<=N-5;j++){
+            vis[i*p[j]]=1;
+            if(i%p[j]==0){
+                miu[i*p[j]]=0;
+                break;
+            }
+            miu[i*p[j]]=(-miu[i]+mod)%mod;
+        }
+    }
+    for(int i=1;i<=N-5;i++){
+        w[i]=miu[i]*i%mod*i%mod;
+    }
+    return ;
+}
+int f[N],s[N];
 signed main(){
-	int n=read(),q=read();
-
+    ycl();
+    int ni2=qmi(2,mod-2,mod);
+	int q=read();n=read();
+    for(int i=1;i<=n;i++)f[i]=i*i%mod;
+    for(int d=1;d<=n;d++){
+        for(int T=d;T<=n;T+=d){
+            s[T]=(s[T]+f[d]*w[T/d]%mod)%mod;
+        }
+    }
+    for(int T=1;T<=n;T++){
+        add(T,s[T]);
+    }
+    while(q--){
+        int a=read(),b=read(),x=read(),k=read(),gc=mgcd(a,b);
+        int tep=x%mod*gc%mod*gc%mod*qmi(a*b%mod,mod-2,mod)%mod;
+        for(int T=gc;T<=n;T+=gc){
+            add(T,(-f[gc]+tep+mod)%mod*w[T/gc]%mod);
+        }
+        f[gc]=tep;
+        int res=0;
+        for(int l=1,r;l<=k;l=r+1){
+            r=k/(k/l);
+            res=(res+((k/r)*((k/r)+1)%mod*ni2%mod)*((k/r)*((k/r)+1)%mod*ni2%mod)%mod%mod*(cha(r)-cha(l-1)+mod)%mod)%mod;
+        }
+        cout<<res<<endl;
+    }
 	return 0;
 }
