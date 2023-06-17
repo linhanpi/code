@@ -1,78 +1,180 @@
-//#pragma GCC optimize(3)
- 
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
- 
 using namespace std;
-using namespace __gnu_pbds;
- 
-#define db double
+
+#pragma GCC optimize(3)
+#pragma GCC target("avx")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("inline")
+#pragma GCC optimize("-fgcse")
+#pragma GCC optimize("-fgcse-lm")
+#pragma GCC optimize("-fipa-sra")
+#pragma GCC optimize("-fte-p")
+#pragma GCC optimize("-fte-vrp")
+#pragma GCC optimize("-fpeephole2")
+#pragma GCC optimize("-ffast-math")
+#pragma GCC optimize("-fsched-spec")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC optimize("-falign-jumps")
+#pragma GCC optimize("-falign-loops")
+#pragma GCC optimize("-falign-labels")
+#pragma GCC optimize("-fdevirtualize")
+#pragma GCC optimize("-fcaller-saves")
+#pragma GCC optimize("-fcrossjumping")
+#pragma GCC optimize("-fthad-jumps")
+#pragma GCC optimize("-funroll-loops")
+#pragma GCC optimize("-fwhole-program")
+#pragma GCC optimize("-forder-blocks")
+#pragma GCC optimize("-fschedule-insns")
+#pragma GCC optimize("inline-functions")
+#pragma GCC optimize("-fte-tainline-merge")
+#pragma GCC optimize("-fschedule-insns2")
+#pragma GCC optimize("-fstrict-aliasing")
+#pragma GCC optimize("-fstrict-overflow")
+#pragma GCC optimize("-falign-functions")
+#pragma GCC optimize("-fcse-skip-blocks")
+#pragma GCC optimize("-fcse-follow-jumps")
+#pragma GCC optimize("-fsched-interblock")
+#pragma GCC optimize("-fpartial-inlining")
+#pragma GCC optimize("no-stack-protector")
+#pragma GCC optimize("-forder-functions")
+#pragma GCC optimize("-findict-inlining")
+#pragma GCC optimize("-fhoist-adjacent-loads")
+#pragma GCC optimize("-frun-cse-after-loop")
+#pragma GCC optimize("inline-small-functions")
+#pragma GCC optimize("-finline-small-functions")
+#pragma GCC optimize("-fte-switch-conversion")
+#pragma GCC optimize("-foptimize-sibling-calls")
+#pragma GCC optimize("-fexpensive-optimizations")
+#pragma GCC optimize("-funsafe-loop-optimizations")
+#pragma GCC optimize("inline-functions-called-once")
+#pragma GCC optimize("-fdelete-null-pointer-checks")
+#pragma GCC optimize(2)
+
 #define ll long long
-#define ld long double
-#define uint unsigned int
-#define ull unsigned long long
-#define vint vector <int>
-#define vpii vector <pii>
- 
-#define pii pair <int, int>
-#define pll pair <ll, ll>
+#define int long long
+#define inline inline
+#define  register
+#define LD long double
+
+#define PII pair <int, int>
 #define fi first
 #define se second
-#define pb emplace_back
-#define all(x) begin(x), end(x)
-#define rev(x) reverse(all(x))
-#define sor(x) sort(all(x))
-#define mem(x, v, s) memset(x, v, sizeof(x[0]) * (s))
-#define cpy(x, y, s) memcpy(x, y, sizeof(x[0]) * (s))
-#define FileI(x) freopen(x, "r", stdin)
-#define FileO(x) freopen(x, "w", stdout)
-#define y1 y_chenxiaoyan_1
- 
-bool Mbe;
-namespace IO {
-	char buf[1 << 21], *p1 = buf, *p2 = buf, Obuf[1 << 24], *O = Obuf;
-	#define gc getchar()
-//	#define gc (p1 == p2 && (p2 = (p1 = buf) + \
-		fread(buf, 1, 1 << 21, stdin), p1 == p2) ? EOF : *p1++)
-	#define pc(x) (*O++ = x)
-	#define flush() fwrite(Obuf, 1, O - Obuf, stdout)
-	inline ll read() {
-		ll x = 0; bool sgn = 0; char s = gc;
-		while(!isdigit(s)) sgn |= s == '-', s = gc;
-		while(isdigit(s)) x = x * 10 + s - '0', s = gc;
-		return sgn ? -x : x;
-	}
-	template <class T>
-		inline void rprint(T x) {if(x >= 10) rprint(x / 10); pc(x % 10 + '0');}
-	template <class T>
-		inline void print(T x) {if(x < 0) pc('-'), x = -x; rprint(x);}
-} using namespace IO;
- 
-template <class T1, class T2> void cmin(T1 &a, T2 b){a = a < b ? a : b;}
-template <class T1, class T2> void cmax(T1 &a, T2 b){a = a > b ? a : b;}
- 
-const int N = 2e3 + 5;
-const ld eps = 1e-10;
-struct DP {ld res; int x, y;} f[N];
-int n, a, b;
-ld ans, la, ra = 1, p[N], u[N];
-int main() {
-	cin >> n >> a >> b;
-	for(int i = 1; i <= n; i++) cin >> p[i];
-	for(int i = 1; i <= n; i++) cin >> u[i];
-	for(int _a = 1; _a <= 40; _a++) {
-		ld ma = (la + ra) / 2, lb = 0, rb = 1;
-		for(int _b = 1; _b <= 40; _b++) {
-			ld mb = (lb + rb) / 2;
-			for(int i = 1; i <= n; i++) {
-				ld val; f[i] = f[i - 1];
-				if((val = f[i - 1].res + p[i] - ma) > f[i].res + eps) f[i] = {val, f[i - 1].x + 1, f[i - 1].y};
-				if((val = f[i - 1].res + u[i] - mb) > f[i].res + eps) f[i] = {val, f[i - 1].x, f[i - 1].y + 1};
-				if((val = f[i - 1].res + p[i] + u[i] - p[i] * u[i] - ma - mb) > f[i].res + eps)
-					f[i] = {val, f[i - 1].x + 1, f[i - 1].y + 1};
-			} if(f[n].y == b) {lb = rb = mb; break;}
-			f[n].y <= b ? rb = mb : lb = mb;
-		} f[n].x <= a ? (ra = ma, ans = f[n].res + a * ma + b * lb) : la = ma;
-	} printf("%.9LF\n", ans);
-	return flush(), 0;
+#define mk make_pair
+#define pb push_back
+
+#define p(i, x, y) for (register int i = x; i <= y; ++ i )
+#define jian(i, x, y) for (register int i = x; i >= y; -- i )
+
+inline int ad() {
+	int s = 0, w = 1; char c = getchar();
+	whinlinee (! isdigit(c)){ if (c == '-') w = -1; c = getchar();}
+	whinlinee (isdigit(c)){ s = (s << 3) + (s << 1) + (c ^ 48); c = getchar();}
+	return s * w;
 }
+inline void write(register int x) {
+	if (x < 0){
+		putchar('-');
+		x = -x;
+    }
+	if (x > 9) write(x / 10);
+	putchar((char)(x % 10 + '0'));
+}
+inline void write_(register int x) {
+	write(x);
+	putchar(' ');
+}
+inline void writeline(register int x) {
+	write(x);
+	putchar('\n');
+}
+
+inline void chkmax(int &x, register int y) { if (y > x) x = y;}
+inline void chkmin(int &x, register int y) { if (y < x) x = y;}
+
+inline int ksm(register int a, register int b, register int p) {
+	int s = 1;
+	whinlinee (b) {
+	if (b & 1) s = s * a % p;
+	a = a * a % p;
+	b >>= 1;
+	}
+	return s;
+}
+
+const int N=2e6+5;
+const int INF=1e15;
+
+int n,m;
+int x[N],X[N],v[N],dp[N];
+
+struct node{
+	int opt,xx,id;
+}q[N];
+int ans[N];
+
+signed main() {
+	// fopen("miner.in","r",stdin);
+	// fopen("miner.out","w",stdout);
+	
+	n=ad(),m=ad();
+	int maxx=ad();
+	maxx=0;
+	for(int i=1;i<=n;++i){
+		x[i]=ad(),v[i]=ad();
+		X[i]=x[i];
+		chkmax(maxx,x[i]*v[i]);
+	}
+	for(int i=1;i<=m;++i){
+		int opt=ad();
+		if(opt==1){
+			int y=ad();
+			q[i]={opt,y,i};
+			x[y]=2e10;
+		}
+		else{
+			int k=ad();
+			q[i]={opt,k,i};
+		}
+	}
+	
+	for(int i=1;i<=n;++i){
+		for(int j=maxx;j>=x[i]*v[i];--j){
+			chkmax(dp[j],dp[j-x[i]*v[i]]+v[i]);
+		}
+	}
+	memset(ans,-1,sizeof ans);
+	for(int i=m;i>=1;--i){
+		if(q[i].opt==1){
+			x[q[i].xx]=X[q[i].xx];
+			int id=q[i].xx;
+			for(int j=maxx;j>=x[id]*v[id];--j){
+				chkmax(dp[j],dp[j-x[id]*v[id]]+v[id]);
+			}
+		}
+		else{
+			ans[q[i].id]=dp[q[i].xx];
+		}
+	}
+	
+	for(int i=1;i<=m;++i){
+		if(~ans[i]){
+			writeline(ans[i]);
+		}
+	}
+	
+	return 0;
+}
+/*
+3 8 50
+3 3
+4 2
+6 4
+2 25
+2 8
+2 7
+2 12
+1 2
+2 25
+1 3
+2 40
+*/
