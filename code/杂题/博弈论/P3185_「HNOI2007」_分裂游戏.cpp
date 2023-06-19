@@ -39,7 +39,49 @@ inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
 inline bool dengyu(ld x,ld y){return abs(x-y)<=eps;}
 inline bool dayu(ld x,ld y){return x>eps+y;}
 inline bool xiaoyu(ld x,ld y){return y>eps+x;}
+int sg[N],vis[N],a[N];
 signed main(){
-	
+	sg[1]=0;
+    for(int i=2;i<=21;i++){
+        for(int j=1;j<=i;j++){
+            for(int k=j;k<i;k++){
+                vis[sg[j]^sg[k]]=i;
+            }
+        }
+        for(sg[i]=0;vis[sg[i]]==i;sg[i]++);
+    }
+    int T=read();
+    while(T--){
+        int n=read();
+        for(int i=n;i;i--){
+            a[i]=read();
+        }
+        int ans=0;
+        for(int i=n;i;i--){
+            if(a[i]&1)ans^=sg[i];
+        }
+        if(!ans)puts("-1 -1 -1\n0");
+        else{
+            int res=0,flag=1;
+            for(int i=n;i;i--){
+                if(!a[i])continue;
+                for(int j=i-1;j;j--){
+                    if(!a[j])continue;
+                    for(int k=j;k;k--){
+                        if(!a[k])continue;
+                        if(a[k]==1&&j==k)continue;
+                        if((ans^sg[i]^sg[j]^sg[k])==0){
+                            res++;
+                            if(flag){
+                                cout<<n-i<<" "<<n-j<<" "<<n-k<<endl;
+                                flag=0;
+                            }
+                        }
+                    }
+                }
+            }
+            cout<<res<<endl;
+        }
+    }
 	return 0;
 }

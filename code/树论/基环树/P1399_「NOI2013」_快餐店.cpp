@@ -1,9 +1,3 @@
-/*
- * @Author: watering_penguin 
- * @Date: 2023-02-03 21:52:20 
- * @Last Modified by:   watering_penguin 
- * @Last Modified time: 2023-02-03 21:52:20 
- */
 #include<bits/stdc++.h>
 #define int long long
 // #define double long double
@@ -36,7 +30,7 @@ template<typename T>inline void write(T x) {
 const int N=2e5+5;
 const int M=26;
 const int mo=7000007;
-const int inf=1e18+7;
+const int inf=1e14+7;
 const int base=131;
 const int mod3=998244353;
 const int mod2=998244352;
@@ -71,9 +65,6 @@ int ans[N];
 int hz;
 int maxpre[N],maxhou[N],mapre[N],mahou[N];
 int c[N],d[N],e[N];
-void zz(int now,int fa){
-
-}
 void dfs1(int now,int fa){
 	for(int i=0;i<(int)v[now].size();i++){
 		int y=v[now][i].dao;
@@ -128,7 +119,7 @@ signed main(){
         maxlian[i]=dp[lo[i]][0];
         maxpre[i]=maxhou[i]=-inf;
     }
-    maxpre[0]=maxhou[tot+1]=mapre[0]=mahou[tot+1]=-inf;
+    maxpre[0]=maxhou[tot+1]=-inf;
     for(int i=1;i<=tot;i++){
         mapre[i]=max(mapre[i-1],maxlian[i]+qian[i]);
         maxpre[i]=max(maxpre[i-1],maxlian[i]-qian[i]);
@@ -144,16 +135,15 @@ signed main(){
     }
     // cout<<"duan "<<duan<<endl;
     // for(int i=1;i<=tot;i++){
-    //     cout<<"i "<<i<<" "<<lo[i]<<" "<<qian[i]<<" "<<hz-qian[i]<<" "<<maxlian[i]<<" "<<c[i]<<" "<<d[i]<<" "<<e[i]<<" "<<maxpre[i]<<" "<<maxhou[i]<<" "<<mapre[i]<<" "<<mahou[i]<<endl;
+    //     cout<<"i "<<i<<" "<<lo[i]<<" "<<qian[i]<<" "<<hz-qian[i]<<" "<<maxlian[i]<<" "<<c[i]<<" "<<d[i]<<" "<<e[i]<<" "<<maxpre[i]<<" "<<maxhou[i]<<endl;
     // }
     for(int i=1;i<tot;i++){
         minn=min(minn,max(c[i],max(d[i+1],e[i])));
     }
-	// minn=min(minn,c[tot]);
     minn=max(maxn,minn);
 	// if(minn==7649618277)cout<<maxn<<" "<<minn<<endl;
-    // cout<<fixed<<setprecision(1)<<1.0*minn/2<<endl;
-	cout<<minn<<endl;
+    cout<<fixed<<setprecision(1)<<1.0*minn/2<<endl;
+	// cout<<minn<<endl;
 	return 0;
 }
 /*
