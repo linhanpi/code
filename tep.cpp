@@ -1,46 +1,95 @@
-# [HNOI2007]分裂游戏
+#include<bits/stdc++.h>
+using namespace std;
+int n,k,rt;
+int ver[400005],ne[400005],head[400005],cnt;
+bool vis[200005],used[200005],vised[200005];
+int col[200005],ans=1e9,tot;
+inline void link(int x,int y){
+	ver[++cnt]=y;
+	ne[cnt]=head[x];
+	head[x]=cnt;
+}
+int siz[200005],mxp[200005];
+void find(int x,int fi,int tot){
+	siz[x]=1;mxp[x]=0;
+	for(int i=head[x];i;i=ne[i]){
+		int u=ver[i];
+		if(u==fi||vis[u])continue;
+		find(u,x,tot);
+		siz[x]+=siz[u];mxp[x]=max(mxp[x],siz[u]);
+	}
+	mxp[x]=max(mxp[x],tot-siz[x]);
+	if(mxp[x]<mxp[rt])rt=x;
+}
+vector<int> vec[200005];
+queue<int> q;
+inline bool push(vector<int> &v){
+	for(int i=0;i<v.size();i++){
+		if(!used[v[i]])return 1;
+		q.push(v[i]);
+	}tot++;
+	return 0;
+}
+int fa[200005];
+void dfs1(int x,int fi){
+	fa[x]=fi;
+	for(int i=head[x];i;i=ne[i]){
+		int u=ver[i];
+		if(u==fi||vis[u])continue;
+		dfs1(u,x);
+	}
+}
+int stk[200005],top;
+void del(int x,int fi){
+	stk[top++]=x;used[x]=1;
+	for(int i=head[x];i;i=ne[i]){
+		int u=ver[i];
+		if(u==fi||vis[u])continue;
+		del(u,x);
+	}
+}
+inline void calc(int x){
+	tot=0;
+	while(!q.empty())q.pop();
+	vised[col[x]]=1;
+	if(push(vec[col[x]]))return ;
+	dfs1(x,x);
+	while(!q.empty()){
+		int u=q.front();q.pop();
+		if(!vised[col[fa[u]]]){
+			vised[col[fa[u]]]=1;
+			if(push(vec[col[fa[u]]]))return ;
+		}
+	}
+	ans=min(ans,tot);
+}
+void solve(int x){
+	vis[x]=1;del(x,x);
+	calc(x);
+	while(top)--top,used[stk[top]]=vised[col[stk[top]]]=0;
+	for(int i=head[x];i;i=ne[i]){
+		int u=ver[i];
+		if(vis[u])continue;
+		rt=0;
+		find(u,x,siz[u]);
+		solve(rt);
+	}
+}
+int main(){
+	scanf("%d%d",&n,&k);
+	for(int i=1;i<n;i++){
+		int x,y;
+		scanf("%d%d",&x,&y);
+		link(x,y);link(y,x);
+	}
+	for(int i=1;i<=n;i++){
+		scanf("%d",&col[i]);
+		vec[col[i]].push_back(i);
+	}
+	mxp[rt=0]=n;
+	find(1,1,n);
+	solve(rt);
+	printf("%d",ans-1);
 
-## 题目描述
-
-聪聪和睿睿最近迷上了一款叫做分裂的游戏。
-
-该游戏的规则是： 共有 $n$ 个瓶子， 标号为 $0, 1, \ldots, n-1$，第 $i$ 个瓶子中装有 $p_i$ 颗巧克力豆，两个人轮流取豆子，每一轮每人选择 $3$ 个瓶子，标号为 $i,j,k$, 并要保证 $i \lt j, j \leq k$，且第 $i$ 个瓶子中至少要有 $1$ 颗巧克力豆，随后这个人从第 $i$ 个瓶子中拿走一颗豆子并在 $j,k$ 中各放入一粒豆子（$j$ 可能等于 $k$） 。如果轮到某人而他无法按规则取豆子，那么他将输掉比赛。胜利者可以拿走所有的巧克力豆！
-
-两人最后决定由聪聪先取豆子，为了能够得到最终的巧克力豆，聪聪自然希望赢得比赛。他思考了一下，发现在有的情况下，先拿的人一定有办法取胜，但是他不知道对于其他情况是否有必胜策略，更不知道第一步该如何取。他决定偷偷请教聪明的你，希望你能告诉他，在给定每个瓶子中的最初豆子数后是否能让自己得到所有巧克力豆，他还希望你告诉他第一步该如何取，并且为了必胜，第一步有多少种取法？
-
-## 输入格式
-
-输入文件第一行是一个整数 $t$，表示测试数据的组数。
-
-每组测试数据的第一行是瓶子的个数 $n$，接下来的一行有 $n$ 个由空格隔开的非负整数，表示每个瓶子中的豆子数。
-
-## 输出格式
-
-对于每组测试数据，输出包括两行，第一行为用一个空格两两隔开的三个整数，表示要想赢得游戏，第一步应该选取的 $3$ 个瓶子的编号 $i,j,k$，如果有多组符合要求的解，那么输出字典序最小的一组。如果无论如何都无法赢得游戏，那么输出用一个空格两两隔开的三个 $-1$。
-
-第二行表示要想确保赢得比赛，第一步有多少种不同的取法。
-
-## 样例 #1
-
-### 样例输入 #1
-
-```
-2
-4
-1 0 1 5000
-3
-0 0 1
-```
-
-### 样例输出 #1
-
-```
-0 2 3
-1
--1 -1 -1
-0
-```
-
-## 提示
-
-$1 \leq t \leq 10$，$2 \leq n \leq 21$，$0 \leq p_i \leq 10^4$，
+	return 0;
+}
