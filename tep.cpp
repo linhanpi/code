@@ -1,95 +1,136 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
-int n,k,rt;
-int ver[400005],ne[400005],head[400005],cnt;
-bool vis[200005],used[200005],vised[200005];
-int col[200005],ans=1e9,tot;
-inline void link(int x,int y){
-	ver[++cnt]=y;
-	ne[cnt]=head[x];
-	head[x]=cnt;
-}
-int siz[200005],mxp[200005];
-void find(int x,int fi,int tot){
-	siz[x]=1;mxp[x]=0;
-	for(int i=head[x];i;i=ne[i]){
-		int u=ver[i];
-		if(u==fi||vis[u])continue;
-		find(u,x,tot);
-		siz[x]+=siz[u];mxp[x]=max(mxp[x],siz[u]);
-	}
-	mxp[x]=max(mxp[x],tot-siz[x]);
-	if(mxp[x]<mxp[rt])rt=x;
-}
-vector<int> vec[200005];
-queue<int> q;
-inline bool push(vector<int> &v){
-	for(int i=0;i<v.size();i++){
-		if(!used[v[i]])return 1;
-		q.push(v[i]);
-	}tot++;
-	return 0;
-}
-int fa[200005];
-void dfs1(int x,int fi){
-	fa[x]=fi;
-	for(int i=head[x];i;i=ne[i]){
-		int u=ver[i];
-		if(u==fi||vis[u])continue;
-		dfs1(u,x);
-	}
-}
-int stk[200005],top;
-void del(int x,int fi){
-	stk[top++]=x;used[x]=1;
-	for(int i=head[x];i;i=ne[i]){
-		int u=ver[i];
-		if(u==fi||vis[u])continue;
-		del(u,x);
-	}
-}
-inline void calc(int x){
-	tot=0;
-	while(!q.empty())q.pop();
-	vised[col[x]]=1;
-	if(push(vec[col[x]]))return ;
-	dfs1(x,x);
-	while(!q.empty()){
-		int u=q.front();q.pop();
-		if(!vised[col[fa[u]]]){
-			vised[col[fa[u]]]=1;
-			if(push(vec[col[fa[u]]]))return ;
-		}
-	}
-	ans=min(ans,tot);
-}
-void solve(int x){
-	vis[x]=1;del(x,x);
-	calc(x);
-	while(top)--top,used[stk[top]]=vised[col[stk[top]]]=0;
-	for(int i=head[x];i;i=ne[i]){
-		int u=ver[i];
-		if(vis[u])continue;
-		rt=0;
-		find(u,x,siz[u]);
-		solve(rt);
-	}
-}
-int main(){
-	scanf("%d%d",&n,&k);
-	for(int i=1;i<n;i++){
-		int x,y;
-		scanf("%d%d",&x,&y);
-		link(x,y);link(y,x);
-	}
-	for(int i=1;i<=n;i++){
-		scanf("%d",&col[i]);
-		vec[col[i]].push_back(i);
-	}
-	mxp[rt=0]=n;
-	find(1,1,n);
-	solve(rt);
-	printf("%d",ans-1);
 
+//#pragma GCC optimize(2)
+
+#define ll long long
+#define int long long
+#define LD long double
+
+#define PII pair <int, int>
+#define fi first
+#define se second
+#define mk make_pair
+#define pb push_back
+
+#define rep(i, x, y) for (register int i = x; i <= y; ++ i )
+#define per(i, x, y) for (register int i = x; i >= y; -- i )
+
+inline int read() {
+    int s = 0, w = 1; char c = getchar();
+    while (! isdigit(c)){ if (c == '-') w = -1; c = getchar();}
+    while (isdigit(c)){ s = (s << 3) + (s << 1) + (c ^ 48); c = getchar();}
+    return s * w;
+}
+inline void write(register int x) {
+    if (x < 0){
+        putchar('-');
+        x = -x;
+    }
+    if (x > 9) write(x / 10);
+    putchar((char)(x % 10 + '0'));
+}
+inline void write_(register int x) {
+    write(x);
+    putchar(' ');
+}
+inline void writeline(register int x) {
+    write(x);
+    putchar('\n');
+}
+
+inline void chkmax(int &x, register int y) { if (y > x) x = y;}
+inline void chkmin(int &x, register int y) { if (y < x) x = y;}
+
+inline int ksm(register int a, register int b, register int p) {
+    int res = 1;
+    while (b) {
+        if (b & 1) res = res * a % p;
+        a = a * a % p;
+        b >>= 1;
+    }
+    return res;
+}
+
+inline int gcd(register int a, register int b) {
+	if (a < b) swap(a, b);
+	if (! b) return a;
+	return gcd(b, a % b);
+}
+
+inline int exgcd(register int a, register int b, int &x, int &y) {
+	if (! b) {
+		x = 1, y = 0;
+		return a;
+	}
+	int d = exgcd(b, a % b, y, x);
+	y -= a / b * x;
+	return d;
+}
+
+#define inv1 invByKsm
+#define inv2 invByExgcd
+
+inline int invByKsm(register int x, register int p) {
+	return ksm(x, p - 2, p);
+}
+inline int invByExgcd(register int x, register int p) {
+	exgcd(x, p, x, *new int);
+	return (x%p+p)%p;
+}
+
+const int N=1e5+5;
+const int INF=1e16;
+
+int n,q,L;
+vector<int> g[N];
+int fa[N],w[N][5];
+
+int f[N][5];
+int TMP[N];
+void dfs(int x){
+	if(f[x][1]>-1e12) return;
+	int sum=0;
+	for(auto y:g[x]){
+		dfs(y);
+		int tmp=-INF;
+		rep(k,1,L){
+			chkmax(tmp,f[y][k]);
+		}
+		TMP[y]=tmp;
+		sum+=tmp;
+	}
+	f[x][1]=sum+w[x][1];
+	rep(k,2,L){
+		for(auto y:g[x]){
+			chkmax(f[x][k],f[y][k-1]+sum-TMP[y]+w[x][k]);
+		} 
+	}
+}
+
+signed main() {
+//	freopen("decompose.in","r",stdin);
+//	freopen("decompose.out","w",stdout);
+	
+	n=read(),q=read(),L=read();
+	rep(i,2,n){
+		int x=read();
+		g[x].pb(i);
+		fa[i]=x;
+	}
+	rep(i,1,n) rep(j,1,L) w[i][j]=read();
+	
+	memset(f,-0x3f,sizeof f);
+	
+	while(q--){
+		int x=read();
+		rep(i,1,L) w[x][i]=read();
+		for(int now=x;now;now=fa[now]) memset(f[now],-0x3f,sizeof f[now]);
+		dfs(1);
+		int ans=-INF;
+		rep(i,1,L) chkmax(ans,f[1][i]);
+		writeline(ans);
+	}
+	
 	return 0;
 }
