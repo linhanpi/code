@@ -40,6 +40,5 @@ inline bool dengyu(ld x,ld y){return abs(x-y)<=eps;}
 inline bool dayu(ld x,ld y){return x>eps+y;}
 inline bool xiaoyu(ld x,ld y){return y>eps+x;}
 signed main(){
-	
 	return 0;
 }
