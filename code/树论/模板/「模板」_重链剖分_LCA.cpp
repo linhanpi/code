@@ -1,9 +1,3 @@
-/*
- * @Author: watering_penguin 
- * @Date: 2023-02-03 21:52:25 
- * @Last Modified by:   watering_penguin 
- * @Last Modified time: 2023-02-03 21:52:25 
- */
 #include<bits/stdc++.h>
 using namespace std;
 inline int read(){
