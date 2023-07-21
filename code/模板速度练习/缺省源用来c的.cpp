@@ -25,9 +25,9 @@ const ld alpha=0.75;
 const pii lpii={0,0};
 const ld MAX_TIME=0.8;
 const ld Down=0.996;
-mt19937 rnd(time(0));
-#define ran_int(l,r) uniform_int_distribution<int>(l,r)(rnd)
-#define ran_real(l,r) uniform_real_distribution<ld>(l,r)(rnd)
+// mt19937 rnd(time(0));
+// #define ran_int(l,r) uniform_int_distribution<int>(l,r)(rnd)
+// #define ran_real(l,r) uniform_real_distribution<ld>(l,r)(rnd)
 int mgcd(int x,int y){return x==0?y:mgcd(y%x,x);}
 int mlcm(int x,int y){return x/mgcd(x,y)*y;}
 inline int qmi(int x,int y,int mod){int ans=1;x%=mod;while(y){if(y&1)ans=ans*x%mod;x=x*x%mod;y>>=1;}return ans;}
