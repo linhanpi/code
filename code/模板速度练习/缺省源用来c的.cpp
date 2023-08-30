@@ -39,36 +39,6 @@ inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
 inline bool dengyu(ld x,ld y){return abs(x-y)<=eps;}
 inline bool dayu(ld x,ld y){return x>eps+y;}
 inline bool xiaoyu(ld x,ld y){return y>eps+x;}
-double ansx,ansy,answ;
-void th(){
-    double t=3000;
-    while(t>1e-15){
-        double ex=ran_real(-5,5);
-        double ew=sqrt(2*ex*ex)+2*sqrt(2*ex*ex-4*ex+4);
-        double cha=ew-answ;
-        if(cha<0){
-            answ=ew;
-        }
-        else if(exp(-cha/t)>ran_real(0,1)){
-            ansx=ex;
-        }
-        t*=Down;
-    }
-    return ;
-}
-void solve(){
-    for(int i=1;i<=1;i++){
-        th();
-    }
-    return ;
-}
-signed main(){
-	answ=inf;
-    solve();
-    cout<<answ<<endl;
-    // for(double i=-100;i<=100;i+=0.000001){
-    //     answ=min(answ,sqrt(2*i*i)+2*sqrt(2*i*i-4*i+4));
-    // }
-    // cout<<answ<<endl;
+signed(){
     return 0;
 }
