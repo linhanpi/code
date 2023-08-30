@@ -25,9 +25,9 @@ const ld alpha=0.75;
 const pii lpii={0,0};
 const ld MAX_TIME=0.8;
 const ld Down=0.996;
-// mt19937 rnd(time(0));
-// #define ran_int(l,r) uniform_int_distribution<int>(l,r)(rnd)
-// #define ran_real(l,r) uniform_real_distribution<ld>(l,r)(rnd)
+mt19937 rnd(time(0));
+#define ran_int(l,r) uniform_int_distribution<int>(l,r)(rnd)
+#define ran_real(l,r) uniform_real_distribution<ld>(l,r)(rnd)
 int mgcd(int x,int y){return x==0?y:mgcd(y%x,x);}
 int mlcm(int x,int y){return x/mgcd(x,y)*y;}
 inline int qmi(int x,int y,int mod){int ans=1;x%=mod;while(y){if(y&1)ans=ans*x%mod;x=x*x%mod;y>>=1;}return ans;}
@@ -39,6 +39,36 @@ inline int mchu(int x,int y){return x*qmi(y,mod-2,mod)%mod;}
 inline bool dengyu(ld x,ld y){return abs(x-y)<=eps;}
 inline bool dayu(ld x,ld y){return x>eps+y;}
 inline bool xiaoyu(ld x,ld y){return y>eps+x;}
+double ansx,ansy,answ;
+void th(){
+    double t=3000;
+    while(t>1e-15){
+        double ex=ran_real(-5,5);
+        double ew=sqrt(2*ex*ex)+2*sqrt(2*ex*ex-4*ex+4);
+        double cha=ew-answ;
+        if(cha<0){
+            answ=ew;
+        }
+        else if(exp(-cha/t)>ran_real(0,1)){
+            ansx=ex;
+        }
+        t*=Down;
+    }
+    return ;
+}
+void solve(){
+    for(int i=1;i<=1;i++){
+        th();
+    }
+    return ;
+}
 signed main(){
-	return 0;
+	answ=inf;
+    solve();
+    cout<<answ<<endl;
+    // for(double i=-100;i<=100;i+=0.000001){
+    //     answ=min(answ,sqrt(2*i*i)+2*sqrt(2*i*i-4*i+4));
+    // }
+    // cout<<answ<<endl;
+    return 0;
 }
